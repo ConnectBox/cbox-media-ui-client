@@ -25,7 +25,7 @@ export const getIdStr = (curObj,field) => {
 }
 
 export const apiGetConfig = async (confIdStr) => {
-  const response = await axios.get("/config/mediaUI/"+confIdStr+".js")
+  const response = await axios.get("config/mediaUI/"+confIdStr+".js")
   const regex = new RegExp('export\\s*var\\s*(\\S*)\\s*=\\s*([\\s\\S]*)');
   const resData = regex.exec(response.data);
   if (resData!=null){

@@ -12,6 +12,7 @@ export default class CboxAppContainer extends React.Component {
     titleList: [],
     myLang: [],
     myTitles: [],
+    channel: undefined,
     curPlay: undefined,
     curPos: 0,
     curDur: 0,
@@ -27,12 +28,15 @@ export default class CboxAppContainer extends React.Component {
         apiGetStoreItem("my-titles").then((myTitles) => {
           apiGetConfig("cbox-lang").then((langList) => {
             apiGetConfig("cbox-titles").then((titleList) => {
-              this.setState({
-                titleList,
-                langList,
-                myTitles,
-                myLang,
-                loading: false
+              apiGetConfig("channel").then((channel) => {
+                this.setState({
+                  titleList,
+                  langList,
+                  myTitles,
+                  myLang,
+                  channel,
+                  loading: false
+                });
               });
             });
           });
@@ -151,6 +155,7 @@ console.log("playNext")
     return (
       <CboxApp
         loading={this.state.loading}
+        channel={this.state.channel}
         titles={this.state.titleList}
         languages={this.state.langList}
         myTitles={this.state.myTitles}

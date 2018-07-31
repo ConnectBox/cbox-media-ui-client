@@ -409,7 +409,7 @@ class SeriesItem extends React.Component {
             <div
               className={unique(serie.title)+'_item item-div'}
             >
-              <img className="image" src={process.env.PUBLIC_URL + imgSrcStr} alt="" />
+              <img className="image" src={process.env.PUBLIC_URL + "/" + imgSrcStr} alt="" />
               <div className="Title">{serie.title}
                 {isPreview && (<div className="Description">{serie.description}</div>)}
                 <div className="EpDescription">{curEpDescr}</div>

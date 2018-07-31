@@ -13,7 +13,6 @@ import NavChevronLeft from 'material-ui-icons/ChevronLeft';
 import MyTitlesList from '../components/my-titles-list.js';
 import MediaStore from '../components/media-store.js';
 import Divider from 'material-ui/Divider';
-import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import verge from 'verge';
 import 'react-select/dist/react-select.css';
@@ -194,13 +193,14 @@ console.log(cur)
   )
 
   Home = (props) => {
+    const {channel} = this.props;
     const largeScreen = (this.state.containerWidth>=768);
     return (
     <div style={(this.props.curView!=null)? defaultBackgroundStyle : null}>
       <CBoxAppBar
-        title={this.state.appTitle}
+        channel={channel}
+        displayMenu={true}
         onLeftIconButtonClick={this.handleToggle}
-        onRightIconMenuSelect={this.handleMenuSelect}
       />
       {(!this.props.loading) && (<MyTitlesList
         myTitles={this.props.myTitles}
@@ -277,6 +277,47 @@ console.log(cur)
 
   Bible = () => (<div/>)
 
+  Settings = () => {
+    const { classes } = this.props;
+    return (
+      <div>
+        <Button
+          variant="fab"
+          onClick={this.handleReturnToHome}
+          className={classes.topButton}
+          color="primary"
+          component={Link}
+          to='/'
+        >
+          <ChevronLeftIcon />
+        </Button>
+        <Divider />
+        <Typography
+          type="title"
+          color="inherit"
+          className={classes.menuTitle}
+        >Navigation language:</Typography>
+        <Typography className={classes.smallText}>({lang})</Typography>
+        <NavLangSelect
+          languages={["eng"]}
+          onSelectUpdate={this.handleNavLang}
+        />
+        <Divider />
+        <Typography
+          type="title"
+          color="inherit"
+          className={classes.menuTitle}
+        >Media content languages:</Typography>
+        <LanguageSelect
+          languages={this.props.languages}
+          myLang={this.props.myLang}
+          onSelectUpdate={this.props.onMyLangUpdate}
+        />
+        <Divider />
+      </div>
+    )
+  }
+
   handleToggle = () => this.setState({open: !this.state.open});
   handleClose = () => this.setState({open: false});
   handleMenuSelect = () => this.setState({langOpen: true});
@@ -315,9 +356,7 @@ console.log(valArr)
 */
 
   render() {
-    const largeScreen = (this.state.containerWidth>=768);
-
-    const { classes } = this.props;
+    const { channel } = this.props;
     const isCurPlaying = (this.props.curPlay!=null);
     return (
       <div
@@ -331,42 +370,8 @@ console.log(valArr)
           onClose={this.handleClose}
         >
           <CboxMenuList
+            channel={channel}
             onMenuClick={this.handleMenuClick}
-          />
-        </Drawer>
-        <Drawer
-          docked="false"
-          anchor="right"
-          classes={{paper: largeScreen ? classes.drawerPaperLarge : classes.drawerPaperSmall }}
-          open={this.state.langOpen}
-          onClose={this.handleLangClose}
-        >
-          <div className={classes.drawerHeader}>
-            <IconButton onClick={this.handleLangClose}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
-          <Divider />
-          <Typography
-            type="title"
-            color="inherit"
-            className={classes.menuTitle}
-          >Navigation language:</Typography>
-          <Typography className={classes.smallText}>({lang})</Typography>
-          <NavLangSelect
-            languages={["eng"]}
-            onSelectUpdate={this.handleNavLang}
-          />
-          <Divider />
-          <Typography
-            type="title"
-            color="inherit"
-            className={classes.menuTitle}
-          >Media content languages:</Typography>
-          <LanguageSelect
-            languages={this.props.languages}
-            myLang={this.props.myLang}
-            onSelectUpdate={this.props.onMyLangUpdate}
           />
         </Drawer>
         <Switch>
@@ -377,6 +382,7 @@ console.log(valArr)
           <Route path='/training' component={this.Trainng}/>
           <Route path='/bible' component={this.Bible}/>
           <Route path='/video' component={this.VideoPlayer}/>
+          <Route path='/setting' component={this.Settings}/>
         </Switch>
         <Footer
           isPaused={this.state.isPaused}

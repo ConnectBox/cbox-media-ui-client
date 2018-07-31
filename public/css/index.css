@@ -5,7 +5,7 @@ body,
   height: 100%;
 }
 
-#page_container[data-playing=true] > div > div > ul > li:last-child {
+#page_container[data-playing=true] > div > div > span:last-child {
   margin-bottom: 80px;
 }
 
@@ -520,7 +520,7 @@ div.tooltip-message.tooltip-message-bottom > span {
   }
   #page_container[data-playing=true] #home-div > .serie-div:last-child,
   #page_container[data-playing=true] #home-div[data-active=true] > div[data-active=true] {
-    padding-bottom: 80px;
+    margin-bottom: 80px;
   }
   #home-div > .serie-div > .item-div > .Title > .Description {
     padding-top: 2px;

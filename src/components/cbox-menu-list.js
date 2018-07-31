@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import { isEmptyObj } from '../utils/obj-functions';
+import Divider from 'material-ui/Divider';
 import ActionHome from 'material-ui-icons/Home';
+import SettingsIcon from 'material-ui-icons/Settings';
 import ActionBook from 'material-ui-icons/Book';
 import AvPlayArrow from 'material-ui-icons/PlayArrow';
 import SocialSchool from 'material-ui-icons/School';
@@ -55,33 +58,52 @@ const menuList = [
 
 const CboxMenuList = props => {
   return (
-    <List>
-      {menuList.map((item,index) => {
-        let btnStyle =  {color: "lightgrey"};
-        if (item.enabled){
-          btnStyle.color = item.color;
-        }
-        let tmpTitle = item.title;
-        let tmpIcon  = item.icon;
-        if (props.hideIcons){
-          tmpIcon = null
-        }
-        return (
-          <Link key={index} to={item.path} style={{ textDecoration: 'none' }}>
-            <ListItem
-              button
-              onClick={item.enabled? (e) => props.onMenuClick(item) : null}
-            >
-              <ListItemIcon style={btnStyle}
+    <div>
+      <List>
+        {menuList.map((item,index) => {
+          let btnStyle =  {color: "lightgrey"};
+          if (item.enabled){
+            btnStyle.color = item.color;
+          }
+          let tmpTitle = item.title;
+          if (!isEmptyObj(props.channel) && (item.path === "/")){
+            tmpTitle = props.channel.title;
+          }
+          let tmpIcon  = item.icon;
+          if (props.hideIcons){
+            tmpIcon = null
+          }
+          return (
+            <Link key={index} to={item.path} style={{ textDecoration: 'none' }}>
+              <ListItem
+                button
+                onClick={item.enabled? (e) => props.onMenuClick(item) : null}
               >
-                {tmpIcon}
-              </ListItemIcon>
-              <ListItemText primary={tmpTitle}/>
-            </ListItem>
-          </Link>
-        )
-      })}
-    </List>
+                <ListItemIcon style={btnStyle}
+                >
+                  {tmpIcon}
+                </ListItemIcon>
+                <ListItemText primary={tmpTitle}/>
+              </ListItem>
+            </Link>
+          )
+        })}
+      </List>
+      <Divider />
+      <List>
+        <Link to={"/setting"} style={{ textDecoration: 'none' }}>
+          <ListItem
+            button
+            onClick={(e) => props.onMenuClick(null)}
+          >
+            <ListItemIcon>
+              <SettingsIcon/>
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItem>
+        </Link>
+      </List>
+    </div>
   )
 }
 

@@ -43,7 +43,7 @@ export class PlayerInfo extends React.Component {
     const temporaryDownloadLink = document.createElement("a");
     temporaryDownloadLink.style.display = 'none';
     document.body.appendChild( temporaryDownloadLink );
-    temporaryDownloadLink.setAttribute( 'href', process.env.PUBLIC_URL + this.props.url );
+    temporaryDownloadLink.setAttribute( 'href', this.props.url );
     temporaryDownloadLink.setAttribute( 'download', tmpFName );
     temporaryDownloadLink.click();
     document.body.removeChild( temporaryDownloadLink );
