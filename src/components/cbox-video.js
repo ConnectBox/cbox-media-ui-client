@@ -1,5 +1,19 @@
 import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import ReactPlayer from 'react-player'
+
+const styles = theme => ({
+  playerWrapper: {
+    position: 'relative',
+    paddingTop: '56.25%'
+  },
+  reactPlayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  }
+});
 
 class CboxVideoPlayer extends React.Component {
   constructor(props) {
@@ -45,33 +59,43 @@ class CboxVideoPlayer extends React.Component {
     }
   }
 
-/* YouTube example:
-    <ReactPlayer url='https://www.youtube.com/watch?v=ysz5S6PUM-U' playing controls />
-    https://github.com/CookPete/react-player/blob/HEAD/src/demo/App.js
-
-   ToDo: Check out possibly using other video players
-     https://github.com/video-react/video-react
-     https://github.com/videojs/video.js https://www.npmjs.com/package/video.js
-*/
   ref = player => {
     this.player = player
   }
 
   render() {
+    const { classes, isPaused, url, fullSize } = this.props;
+    let { width, height } = this.props;
+    const configTest = { file: {
+        forceVideo: true
+      }}
+    if (fullSize) {
+      width = '100%';
+      height = '100%';
+    }
     return (
-      <ReactPlayer
-        ref={this.ref}
-        url={this.props.url}
-        onEnded={this.props.onEnded}
-        onDuration={this.onDuration}
-        onProgress={this.props.onProgress}
-        width={this.props.width}
-        height={this.props.height}
-        playing={!this.props.isPaused}
-        controls
-      />
+      <div className={fullSize ? classes.playerWrapper : null}>
+        <ReactPlayer
+          ref={this.ref}
+          className={fullSize ? classes.reactPlayer : null}
+          url={url}
+          config={configTest}
+          onEnded={this.props.onEnded}
+          onDuration={this.onDuration}
+          onProgress={this.props.onProgress}
+          width={width}
+          height={height}
+          playing={!isPaused}
+          controls
+        />
+      </div>
     )
   }
 };
 
-export default CboxVideoPlayer;
+CboxVideoPlayer.propTypes = {
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles, { withTheme: true })(CboxVideoPlayer);

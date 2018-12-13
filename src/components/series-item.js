@@ -1,23 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Tappable from 'react-tappable';
-import { withStyles } from 'material-ui/styles';
-import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
-import Typography from 'material-ui/Typography';
-import Snackbar from 'material-ui/Snackbar';
-import Button from 'material-ui/Button';
-import NavChevronLeft from 'material-ui-icons/ChevronLeft';
-import DeleteIcon from 'material-ui-icons/Delete';
-import CloseIcon from 'material-ui-icons/Close';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
-import ExpandLessIcon from 'material-ui-icons/ExpandLess';
-import IconButton from 'material-ui/IconButton';
-import AvPlayCircle from 'material-ui-icons/PlayCircleOutline';
-import AvPauseCircle from 'material-ui-icons/PauseCircleOutline';
-import ContentAddCircleOutline from 'material-ui-icons/AddCircleOutline';
-import {getImgOfSerie} from '../utils/obj-functions';
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+import Fab from '@material-ui/core/Fab';
+import NavChevronLeft from '@material-ui/icons/ChevronLeft';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import IconButton from '@material-ui/core/IconButton';
+import AvPlayCircle from '@material-ui/icons/PlayCircleOutline';
+import AvPauseCircle from '@material-ui/icons/PauseCircleOutline';
+import ContentAddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import {getImgOfObj} from '../utils/obj-functions';
 import { unique } from 'shorthash';
-import FileDownload from 'material-ui-icons/FileDownload';
+import { Download } from 'mdi-material-ui';
 import EpList from './ep-list.js';
 import { apiObjGetStorage } from '../utils/api';
 
@@ -80,7 +83,7 @@ const styles = theme => ({
     zIndex: 100,
     position: 'fixed',
   },
-  deleteButtonLScreen: {
+  bookmarkButtonLScreen: {
     left: '75%',
     top: 117,
 //    color: 'white',
@@ -88,7 +91,7 @@ const styles = theme => ({
     zIndex: 100,
     position: 'absolute',
   },
-  deleteButton: {
+  bookmarkButton: {
     left: 132,
     marginTop: 5,
 //    color: 'white',
@@ -110,15 +113,24 @@ const styles = theme => ({
 })
 
 class SeriesItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: '',
-      open: false,
-      showAllEp: false,
-      longPressMode: false,
-      serieCurEp: undefined,
-    };
+  state = {
+    message: '',
+    open: false,
+    showAllEp: false,
+    longPressMode: false,
+    serieCurEp: undefined,
+    playerWidth: this.calcContainerWidth(),
+    playerHeight: this.calcContainerHeight(),
+  }
+
+  calcContainerWidth() {
+    let retVal = document.body.clientWidth;
+    return retVal;
+  }
+
+  calcContainerHeight() {
+    let retVal = document.body.clientHeight;
+    return retVal;
   }
 
   restoreCurEp = (obj) => {
@@ -140,6 +152,11 @@ class SeriesItem extends React.Component {
 
   componentDidMount = () => {
     const {serie,curPlay} = this.props;
+    window.addEventListener('resize', () => {
+      const playerWidth = this.calcContainerWidth();
+      const playerHeight = this.calcContainerHeight();
+      this.setState({playerWidth,playerHeight});
+    }, false);
     if (serie!=null){
       if ((curPlay!=null) && (curPlay.curSerie===serie) && (curPlay.curEp!=null)){
         this.setState({serieCurEp: curPlay.curEp})
@@ -160,7 +177,7 @@ class SeriesItem extends React.Component {
         }
       } else if ((curPlay!=null) && (this.props.curPlay!=null)
                   && (curPlay.curEp!==this.props.curPlay.curEp)){
-        if ((curPlay.curSer===serie)
+        if ((curPlay.curSerie===serie)
             && ((this.state.curEp==null)
                 || (curPlay.curEp.id>this.state.curEp.id))){
           this.setState({serieCurEp: curPlay.curEp})
@@ -199,6 +216,18 @@ class SeriesItem extends React.Component {
     });
     if (this.props.onMyTitlesUpdate!=null){
       this.props.onMyTitlesUpdate("delete")
+    }
+    if (this.props.onSetEditMode!=null){
+      this.props.onSetEditMode(false)
+    }
+  }
+
+  handleAddSerie = () => {
+    this.setState({
+      longPressMode: false,
+    });
+    if (this.props.onMyTitlesUpdate!=null){
+      this.props.onMyTitlesUpdate("add")
     }
     if (this.props.onSetEditMode!=null){
       this.props.onSetEditMode(false)
@@ -267,9 +296,11 @@ class SeriesItem extends React.Component {
 	}
 
   render() {
-    const { classes, serie, curView, curPlay, isPreview, largeScreen } = this.props;
-    const { showAllEp, serieCurEp, longPressMode } = this.state;
-    let imgSrcStr = getImgOfSerie(serie);
+    const { classes, serie, curView, curPlay, inMyList,
+            navigationMode, isPreview, largeScreen } = this.props;
+    const { playerHeight, playerWidth, showAllEp, serieCurEp, longPressMode } = this.state;
+    const serImgSrcStr = getImgOfObj(serie);
+    let imgSrcStr = serImgSrcStr;
     let curIsSerie = (serieCurEp!=null);
     if ((curIsSerie) && (serie!=null) && (serie.fileList!=null)) {
       curIsSerie = (serie.fileList.length>1);
@@ -277,11 +308,20 @@ class SeriesItem extends React.Component {
     let tmpTitle = serie.title
     let curEpDescr="";
     if (serieCurEp!=null){
+      if (serieCurEp.image!=null) {
+        imgSrcStr = getImgOfObj(serieCurEp);
+      }
       if (serieCurEp.title!=null){
         curEpDescr = serieCurEp.title
+      } else if (!curIsSerie) {
+        curEpDescr = "";
       } else {
-        curEpDescr = serieCurEp.id;
+        curEpDescr = serieCurEp.id +1;
       }
+    }
+    let serSubTitle = curEpDescr;
+    if (!curIsSerie) {
+      serSubTitle = serie.description;
     }
     if (imgSrcStr == null) {
       return (
@@ -292,10 +332,17 @@ class SeriesItem extends React.Component {
                             && (curPlay.curSerie!=null)
                             && (serie === curPlay.curSerie));
       let playStateIcon = <AvPauseCircle nativeColor="grey" onClick={this.handleSetPaused}/>; // Show pause button while playing
-      if (!isCurPlaying){
+      const isVideoPlaying = (isCurPlaying && (curPlay.curSerie.mediaType === "vid"));
+      const isBookActive = (isCurPlaying && (curPlay.curSerie.mediaType === "epub"));
+      const isTrainingActive = (isCurPlaying && (curPlay.curSerie.mediaType === "html"));
+      let hideNavigation = isBookActive || isTrainingActive;
+      if (!isCurPlaying) {
         playStateIcon = <AvPlayCircle nativeColor="grey" onClick={(e) => this.handleClickItem(e)}/>;
       } else if (this.props.isPaused) {
         playStateIcon = <AvPlayCircle nativeColor="grey" onClick={this.handleSetPaused}/>;
+      } else if (isVideoPlaying) {
+        const tempHeight = (Math.trunc((playerWidth)*9/16));
+        hideNavigation = playerHeight -tempHeight < 150; // hide if less than margin
       }
       let bookmarkIcon = <ContentAddCircleOutline nativeColor="grey" onClick={this.handleBookmark}/>;
 /*
@@ -305,20 +352,21 @@ class SeriesItem extends React.Component {
 */
 //      <PausePreviewIcon style={iconStyles} color={red500} hoverColor={greenA200} />
       const isActiveSerie = ((curView!= null) && (curView === serie));
-      if (isActiveSerie) {
+      if (hideNavigation) {
+        return <div/>
+      } else if (isActiveSerie) {
         return (
           <div
              style={styles.card}
              data-active={isActiveSerie}
              data-playing={isCurPlaying}
           >
-             <Button
-               variant="fab"
-               mini
+             {navigationMode && (<Fab
+               size="small"
                className={classes.floatingButton}
                onClick={this.handleCloseDialog} >
                  <NavChevronLeft />
-             </Button>
+             </Fab>)}
              <Card className={showAllEp ? classes.cardWrap : classes.card}>
                <div className={classes.details}>
                  <CardContent className={classes.content}>
@@ -344,7 +392,7 @@ class SeriesItem extends React.Component {
                      onClick={this.handleShowList}><ExpandMoreIcon nativeColor="grey"/></IconButton>)}
                    {isPreview && (<IconButton
                      className={classes.actionButton}
-                     onClick={this.handleDownload}><FileDownload nativeColor="grey"/></IconButton>)}
+                     onClick={this.handleDownload}><Download nativeColor="grey"/></IconButton>)}
                    <IconButton
                      className={classes.actionButton}
                     >{playStateIcon}</IconButton>
@@ -361,7 +409,7 @@ class SeriesItem extends React.Component {
                  curPlay={curPlay}
                  curPos={this.props.curPos}
                  isPaused={this.props.isPaused}
-                 imgSrc={imgSrcStr}
+                 imgSrc={serImgSrcStr}
                  onClickPlay={this.handleClickItemIndex}
                  onSetPaused={this.handleSetPaused}
                />)}
@@ -378,33 +426,41 @@ class SeriesItem extends React.Component {
           <Tappable
             onPress={this.handlePressed}
             onClick={(e) => this.handleClickItem(e)}
-            className="serie-div"
+            className="serie-div shadow"
             style={(this.props.disabled) ? {cursor: "default"} : null}
             data-active={isActiveSerie}
             data-playing={isCurPlaying}
             data-edit-mode={longPressMode}
             data-disabled={this.props.disabled}
           >
-            {longPressMode &&
-              (<Button
-                variant="fab"
-                mini
+            {longPressMode && !inMyList &&
+              (<Fab
+                size="small"
                 color="primary"
-                className={largeScreen ? classes.deleteButtonLScreen : classes.deleteButton}
+                className={largeScreen ? classes.bookmarkButtonLScreen : classes.bookmarkButton}
+                onClick={this.handleAddSerie}
+              >
+                {bookmarkIcon}
+              </Fab>
+            )}
+            {longPressMode && inMyList &&
+              (<Fab
+                size="small"
+                color="primary"
+                className={largeScreen ? classes.bookmarkButtonLScreen : classes.bookmarkButton}
                 onClick={this.handleDeleteSerie}
               >
                 <DeleteIcon />
-              </Button>
+              </Fab>
             )}
             {longPressMode &&
-              (<Button
-                variant="fab"
-                mini
+              (<Fab
+                size="small"
                 onClick={this.handleCloseLongPressMode}
                 className={largeScreen ? classes.closeButtonLScreen : classes.closeButton}
               >
                 <CloseIcon />
-              </Button>
+              </Fab>
             )}
             <div
               className={unique(serie.title)+'_item item-div'}
@@ -412,7 +468,7 @@ class SeriesItem extends React.Component {
               <img className="image" src={process.env.PUBLIC_URL + "/" + imgSrcStr} alt="" />
               <div className="Title">{serie.title}
                 {isPreview && (<div className="Description">{serie.description}</div>)}
-                <div className="EpDescription">{curEpDescr}</div>
+                <div className="EpDescription">{serSubTitle}</div>
               </div>
             </div>
           </Tappable>

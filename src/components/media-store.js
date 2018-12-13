@@ -1,21 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import MediaStoreItem from './media-store-item.js';
 import EpList from './ep-list.js';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import GridList, { GridListTile, GridListTileBar } from 'material-ui/GridList';
-import Subheader from 'material-ui/List/ListSubheader';
-import Typography from 'material-ui/Typography';
-import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
-import CheckIcon from 'material-ui-icons/CheckCircle';
-import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/AddCircleOutline';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
-import ExpandLessIcon from 'material-ui-icons/ExpandLess';
-import CloseIcon from 'material-ui-icons/Close';
-import IconButton from 'material-ui/IconButton';
-import Modal from 'material-ui/Modal';
-import { getImgOfSerie, isEmptyObj } from '../utils/obj-functions';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import CheckIcon from '@material-ui/icons/CheckCircle';
+import Fab from '@material-ui/core/Fab';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Modal from '@material-ui/core/Modal';
+import { getImgOfObj, isEmptyObj } from '../utils/obj-functions';
 import {getIdFromItem} from '../utils/api';
 import {iso639Langs} from '../iso639-1-full.js'
 
@@ -27,7 +32,6 @@ const styles = theme => ({
     color: 'whitesmoke',
     backgroundColor: '#111',
     display: 'flex',
-    height: 380,
     flexWrap: 'wrap',
   },
   card: {
@@ -132,15 +136,19 @@ const isInTitleList = (ser,list) => {
 
 const LanguageHeader = (props) => {
   const { classes, lang } = props;
-  return (
-    <div>
-      <Subheader
-        className={classes.subheader}
-        component="div">
-        {iso639Langs[lang].name + " (" +iso639Langs[lang].engName +")"}
-      </Subheader>
-    </div>
-  )
+  if (lang==null){
+    return <div></div>
+  } else {
+    return (
+      <div>
+        <ListSubheader
+          className={classes.subheader}
+          component="div">
+          {iso639Langs[lang].name + " (" +iso639Langs[lang].engName +")"}
+        </ListSubheader>
+      </div>
+    )
+  }
 }
 
 const SerieGridBar = (props) => {
@@ -178,7 +186,7 @@ const SerieGridBar = (props) => {
                     onClick={handleUncheck}
                     color="primary"
                   />)
-              : (<AddIcon onClick={handleAdd}/>)}
+              : (<AddCircleOutlineIcon onClick={handleAdd}/>)}
           </IconButton>
         }
       >
@@ -228,6 +236,10 @@ class MediaStore extends React.Component {
     let useBkgrdColor = 'rgba(15, 4, 76, 0.68)';
     if (filter==="vid"){
       useBkgrdColor = 'rgba(255, 215, 0, 0.78)';
+    } else if (filter==="epub"){
+      useBkgrdColor = 'rgba(120, 215, 120, 0.78)';
+    } else if (filter==="html"){
+      useBkgrdColor = 'rgba(81, 184, 233, 0.68)';
     }
     const subheaderRootStyle = {
       paddingTop: 35,
@@ -270,7 +282,7 @@ class MediaStore extends React.Component {
                   />
                 </GridListTile>
                 {filteredSerList.map((ser,serInx) => {
-                  const imgSrcStr = getImgOfSerie(ser);
+                  const imgSrcStr = getImgOfObj(ser);
                   return (
                     <GridListTile
                       key={serInx}
@@ -324,27 +336,27 @@ class MediaStore extends React.Component {
                  {curIsSerie && !showAllEp && (<IconButton
                    className={classes.actionButton}
                    onClick={this.handleShowList}><ExpandMoreIcon nativeColor="grey"/></IconButton>)}
-                 <Button
-                   variant="fab"
+                 <Fab
+                   size="small"
                    onClick={this.handleClose}
                    className={classes.floatingButton}
                    color="primary"
                  >
                    <CloseIcon />
-                 </Button>
+                 </Fab>
                </CardActions>
              </div>)}
              {(curSer!=null)&&(!showAllEp)
              && (<CardMedia
                  className={classes.moreDetailImg}
-                 image={process.env.PUBLIC_URL + "/" + getImgOfSerie(curSer)}
+                 image={process.env.PUBLIC_URL + "/" + getImgOfObj(curSer)}
                  title={curSer.title}
                />)}
              {curIsSerie && showAllEp
              && (<EpList
                serie={curSer}
                isPaused={false}
-               imgSrc={getImgOfSerie(curSer)}/>)}
+               imgSrc={getImgOfObj(curSer)}/>)}
            </Card>
         </Modal>
       </div>

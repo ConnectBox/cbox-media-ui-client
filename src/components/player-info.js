@@ -1,12 +1,18 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
-import FileDownloadIcon from 'material-ui-icons/FileDownload';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import { Download } from 'mdi-material-ui';
 
 const styles = {
   icon: {
     position: 'relative',
     top: -22,
     left: '88%'
+  },
+  button: {
+    position: 'relative',
+    top: -22,
+    left: '78%'
   },
 }
 
@@ -37,7 +43,12 @@ export class PlayerInfo extends React.Component {
     return retVal;
   }
 
-  handleDownload= (ev) => {
+  handleNewWindow= (ev) => {
+    ev.stopPropagation();
+console.log(ev)
+  }
+
+  handleDownload = (ev) => {
     ev.stopPropagation();
     const tmpFName = this.props.downloadName;
     const temporaryDownloadLink = document.createElement("a");
@@ -92,6 +103,9 @@ export class PlayerInfo extends React.Component {
   render() {
     const {serie, episode, curSec, curDur, isWaitingForPlayInfo} = this.props;
     let playStateStr = "pause"; // Show pause button while playing
+    let hasButton = false;
+    let btnText = "";
+    let btnUrl = "";
     if (this.props.isPaused || isWaitingForPlayInfo) {
       playStateStr = "play";
     }
@@ -108,10 +122,15 @@ export class PlayerInfo extends React.Component {
         if (episode.title!=null){
           curEpTitle = episode.title
         } else {
-          curEpTitle = episode.id;
+          curEpTitle = episode.id +1;
         }
       } else if (serie.fName!=null){
         curEpTitle = serie.description;
+      }
+      hasButton = (serie.button!=null);
+      if (hasButton) {
+        btnText = serie.button.label;
+        btnUrl = serie.button.url;
       }
     }
     return (
@@ -127,14 +146,22 @@ export class PlayerInfo extends React.Component {
               {serie && <div className="ser-title">{serie.title}</div>}
               {serie && <div className="audio-title">{curEpTitle}</div>}
               {episode && <div className="audio-descr"></div>}
-              <IconButton
+              {!hasButton && (<IconButton
                 aria-label="Download"
                 style={styles.icon}
               >
-                <FileDownloadIcon
+                <Download
                   onClick={(e) => this.handleDownload(e)}
                 />
-              </IconButton>
+              </IconButton>)}
+              {hasButton && (<Button
+                href={btnUrl}
+                variant="contained"
+                color="secondary"
+                style={styles.button}
+                onClick={(e) => this.handleNewWindow(e)}
+              >{btnText}
+              </Button>)}
             </div>
           </div>
         </div>
@@ -144,7 +171,7 @@ export class PlayerInfo extends React.Component {
             className={isWaitingForPlayInfo?"waiting":null}
           ></p>
         </div>
-        <a id="closeFooter" className="close" onClick={this.clickedClose}>Close Footer</a>
+        <button id="closeFooter" className="close" onClick={this.clickedClose}>Close Footer</button>
       </div>
     )
   }

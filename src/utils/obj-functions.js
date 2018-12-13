@@ -1,7 +1,6 @@
 import url from 'url';
 
 export const isEmpty = obj => ((obj==null) || (Object.getOwnPropertyNames(obj).length === 0))
-
 export const isEmptyObj = obj => ((isEmpty(obj)) || (Object.keys(obj).length === 0))
 
 export const arrayToObject = (array, keyField) =>
@@ -16,11 +15,17 @@ export const getLocalImgFName = (remoteUrl, key) => {
   return "x/" + checkURL.host + checkURL.pathname + "-" + key + ".jpg";
 }
 
-export const getLocalMediaFName = (url) => {
-  return encodeURI(process.env.PUBLIC_URL +"/" + url);
+export const getLocalMediaFName = (url) => encodeURI(process.env.PUBLIC_URL +"/" + url)
+
+export const getImgOfType = (type) => {
+  let retStr = "/icon/clapperboard.png";
+  if (type==="aud"){
+    retStr = "/icon/headphones.png";
+  }
+  return retStr;
 }
 
-export const getImgOfSerie = (ser) => {
+export const getImgOfObj = (ser) => {
   let retStr = "img/Placeholder.png";
   if (ser!=null){
     if(ser.image!=null){
@@ -31,26 +36,50 @@ export const getImgOfSerie = (ser) => {
       } else if((ser.image.origin==="Local")
         &&(ser.image.filename!=null)){
         retStr = ser.image.filename;
+      } else if((ser.image.origin==="Url")
+        &&(ser.image.filename!=null)){
+        retStr = ser.image.filename;
       }
     } else if (ser.index!=null){
       retStr = "img/ser" + pad((ser.index) % 41) + ".jpg";
     }
   }
   return retStr;
-} 
-
-export const pad = (n) => {
-  return ((n < 10) && (n >=0)) ? ("0" + n) : n;
 }
 
+export const getFilteredList = (titles,languages,myTitles,myLang,fullList) => {
+  let retList = [];
+  if (titles!=null){
+    if (fullList){
+      languages.forEach(lang => {
+        if (titles[lang]!=null){
+          Object.keys(titles[lang]).forEach((title) => {
+            retList.push(titles[lang][title])
+          })
+        }
+      })
+    } else if ((titles!=null)&&(myTitles!=null)){
+      Object.keys(myTitles).filter(
+        lang => myLang.indexOf(lang)>=0
+      ).forEach((lang) => {
+        if (titles[lang]!=null){
+          myTitles[lang].forEach((title) => {
+            if (titles[lang][title]!=null){
+              retList.push(titles[lang][title])
+            }
+          })
+        }
+      });
+    }
+  }
+  return retList;
+}
+
+export const pad = (n) => ((n < 10) && (n >=0)) ? ("0" + n) : n
 export const removeAllDigits = str => str.replace(/\d/g, "")
-
 export const keepAllDigits = str => str.replace(/\D/g, "")
-
 export const uniqueArray = array => [ ...new Set(array)]
-
 export const nbrOfKeysInObj = obj => ((obj==null) ? 0 : Object.getOwnPropertyNames(obj).length )
-
 export const jsonEqual = (a,b) => JSON.stringify(a) === JSON.stringify(b)
 
 export const nullToEmptyStr = str => {

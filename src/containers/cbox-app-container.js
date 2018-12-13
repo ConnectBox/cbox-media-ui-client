@@ -1,17 +1,21 @@
 import React from 'react';
 import { apiGetConfig, getIdFromItem,
-          apiGetStoreItem, apiSetStorage,
+          apiGetStoreItem, apiSetStorage, apiGetStorage,
           apiObjGetStorage, apiObjSetStorage } from "../utils/api";
 import CboxApp from '../components/cbox-app'
 import localforage from 'localforage';
+import locale2 from 'locale2'
+import {iso639_3b2} from '../iso639-3b2'
 
 
 export default class CboxAppContainer extends React.Component {
   state = {
     langList: ["eng"], // default language
     titleList: [],
+    featuredList: [],
     myLang: [],
     myTitles: [],
+    exclTitles: [],
     channel: undefined,
     curPlay: undefined,
     curPos: 0,
@@ -19,23 +23,41 @@ export default class CboxAppContainer extends React.Component {
     cur: undefined,
     curView: undefined,
     loading: true,
+    defaultLang: undefined
   }
 
   componentDidMount() {
+    const defaultLang = iso639_3b2[locale2.substr(0,2)]
+    this.setState({defaultLang})
     localforage.ready().then(() => {
       console.log(localforage.driver());
       apiGetStoreItem("my-lang").then((myLang) => {
-        apiGetStoreItem("my-titles").then((myTitles) => {
-          apiGetConfig("cbox-lang").then((langList) => {
-            apiGetConfig("cbox-titles").then((titleList) => {
-              apiGetConfig("channel").then((channel) => {
-                this.setState({
-                  titleList,
-                  langList,
-                  myTitles,
-                  myLang,
-                  channel,
-                  loading: false
+        apiGetStorage("my-titles").then((myTitles) => {
+          apiGetStorage("excl-titles").then((exclTitles) => {
+            apiGetConfig("cbox-lang").then((langList) => {
+              apiGetConfig("cbox-titles").then((titleList) => {
+                apiGetConfig("cbox-featured").then((featuredList) => {
+                  if ((featuredList.length<=0)&&(myTitles==null)){
+                    // Backwards compatibility - empty featuredList? - try this
+                    apiGetStoreItem("my-titles").then((findTitles) => {
+                      myTitles=findTitles;
+                    })
+                  }
+                  apiGetConfig("channel").then((channel) => {
+                    if (myTitles==null) {
+                      myTitles=[];
+                    }
+                    this.setState({
+                      langList,
+                      titleList,
+                      featuredList,
+                      myTitles,
+                      exclTitles,
+                      myLang,
+                      channel,
+                      loading: false
+                    });
+                  });
                 });
               });
             });
@@ -59,8 +81,7 @@ console.log("reset")
     })
   }
 
-  handleMyLangUpdate = (myLangArr) => {
-    const myLang = myLangArr.split(',');
+  handleMyLangUpdate = (myLang) => {
     this.setState({myLang});
     apiSetStorage("my-lang",myLang);
   }
@@ -69,7 +90,6 @@ console.log("reset")
     const {myTitles,myLang} = this.state;
     if (item!=null){
       if ((item.language!=null)
-          && (myTitles!=null)
           && (myLang!=null)
           && (myLang.indexOf(item.language)>=0)){
         const checkID = getIdFromItem(item);
@@ -83,6 +103,7 @@ console.log("reset")
             copyTitles[item.language]=[];
           }
           copyTitles[item.language].push(checkID);
+console.log(copyTitles)
           this.setState({myTitles: copyTitles});
           apiSetStorage("my-titles",copyTitles);
         }
@@ -106,13 +127,17 @@ console.log("playNext")
         && (curEp!=null)){
       // This serie has episodes
       let epInx = curEp.id;
-      epInx+=1;
-      let newPlayObj = {curSerie};
-      apiObjSetStorage(newPlayObj,"curEp",epInx);
-      if (curSerie.fileList[epInx]!=null){
-        newPlayObj.curEp=curSerie.fileList[epInx];
+      if (curSerie.fileList.length-1>epInx){
+        epInx+=1;
+        let newPlayObj = {curSerie};
+        apiObjSetStorage(newPlayObj,"curEp",epInx);
+        if (curSerie.fileList[epInx]!=null){
+          newPlayObj.curEp=curSerie.fileList[epInx];
+        }
+        this.setState({curPlay: newPlayObj, cur: undefined})
+      } else {
+        this.setState({curPlay: undefined, cur: undefined})
       }
-      this.setState({curPlay: newPlayObj, cur: undefined})
     }
   }
 
@@ -135,6 +160,7 @@ console.log("playNext")
               value=0;
               apiObjSetStorage(newPlayObj,"curEp",0);
             }
+console.log(value)
             if (curSerie.fileList[value]!=null){
               newPlayObj.curEp=curSerie.fileList[value];
             }
@@ -152,17 +178,23 @@ console.log("playNext")
   }
 
   render() {
+    const { loading, channel, titleList, defaultLang,
+            langList, myTitles, featuredList,
+            exclTitles, myLang, curView, curPlay, cur } = this.state;
     return (
       <CboxApp
-        loading={this.state.loading}
-        channel={this.state.channel}
-        titles={this.state.titleList}
-        languages={this.state.langList}
-        myTitles={this.state.myTitles}
-        myLang={this.state.myLang}
-        curView={this.state.curView}
-        curPlay={this.state.curPlay}
-        curPos={this.state.cur}
+        loading={loading}
+        channel={channel}
+        titles={titleList}
+        languages={langList}
+        myTitles={myTitles}
+        defaultLang={defaultLang}
+        featuredList={featuredList}
+        exclTitles={exclTitles}
+        myLang={myLang}
+        curView={curView}
+        curPlay={curPlay}
+        curPos={cur}
         onMyLangUpdate={this.handleMyLangUpdate}
         onMyTitlesUpdate={this.handleMyTitlesUpdate}
         onReset={this.handleReset}

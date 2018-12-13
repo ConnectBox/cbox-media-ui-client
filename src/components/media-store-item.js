@@ -66,7 +66,7 @@ class MediaStoreItem extends React.Component {
       if (serieCurEp.title!=null){
         curEpDescr = serieCurEp.title
       } else {
-        curEpDescr = serieCurEp.id;
+        curEpDescr = serieCurEp.id +1;
       }
     }
     if (serie == null) {

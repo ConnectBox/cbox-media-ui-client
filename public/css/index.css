@@ -34,12 +34,18 @@ body:after {
 a {
   cursor: pointer;
 }
-a.close {
+button.close {
   z-index: 2;
   float: right;
   display: block;
   background: url("../img/close.png") no-repeat center center;
   background-size: 32px 32px;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
   width: 32px;
   height: 32px;
   position: absolute;
@@ -89,6 +95,9 @@ a.close {
 body #home-div[data-active=true] {
   max-width: none;
   background-color: black;
+}
+body #page_container[data-playing=true] #home-div[data-active=true] {
+  padding-bottom: 80px;
 }
 body #home-div{
   max-width: 768px;
@@ -145,10 +154,19 @@ body #home-div[data-disabled=false] > .serie-div[data-playing=true]:hover {
   -webkit-box-shadow: 0px 0px 20px yellow;
   box-shadow: 0px 0px 20px yellow;
 }
-body #home-div > .serie-div {
+body #home-div > .serie-div.shadow {
   -moz-box-shadow: 0px 0px 1px #387bbe;
   -webkit-box-shadow: 0px 0px 1px #387bbe;
   box-shadow: 0px 0px 1px #387bbe;
+}
+body #home-div > .serie-div.dashed {
+  border: 2px dashed lightgrey;
+}
+body #home-div > .list-header {
+  float: left;
+  width: 90%;
+  padding-left: 5px;
+  font-size: 15px;
 }
 body #home-div[data-disabled=false] > .serie-div.Tappable-inactive:hover {
   -moz-box-shadow: 0px 0px 20px #387bbe;
@@ -195,6 +213,17 @@ body #home-div[data-active=true]  > .serie-div img {
   position: fixed;
   right: 0px;
   left: 0px;
+  bottom: 0px;
+  margin: 0;
+}
+#footer-epub {
+  z-index: 3;
+  font-size: 18px;
+  position: fixed;
+  right: 0px;
+  left: 0px;
+  height: 100%;
+  top: 70px;
   bottom: 0px;
   margin: 0;
 }
@@ -277,7 +306,7 @@ html:not(.lte8) #footer #pause {
   top: 0px;
   height: 64px;
   width: 0px;
-  background: gainsboro;
+  background: #b1e0c9;
   z-index: 1;
   border-right: 1px solid #efb;
 }
@@ -289,6 +318,8 @@ html:not(.lte8) #footer #pause {
 }
 #footer .ser-title {
   height: 16px;
+  overflow: hidden;
+  text-overflow: clip;
 }
 #footer .audio-title {
   padding-top: 6px;
@@ -512,11 +543,15 @@ div.tooltip-message.tooltip-message-bottom > span {
     padding-left: 8px;
   }
   #home-div > .serie-div img {
-    width: 20%;
-    min-width: 160px;
+    width: 25%;
+    background-color: #dceef5;
+    object-fit: contain;
+    object-position: 0%;
+    min-width: 120px;
     height: 100px;
     float: left;
-    padding: 3px 10px 3px 3px;
+    padding: 3px 0;
+    margin: 0 10px;
   }
   #page_container[data-playing=true] #home-div > .serie-div:last-child,
   #page_container[data-playing=true] #home-div[data-active=true] > div[data-active=true] {

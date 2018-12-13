@@ -1,7 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
 import './language-select.css';
-import 'react-select/dist/react-select.css';
 import {iso639Langs} from '../iso639-1-full.js'
 
 const styles = {
@@ -21,14 +20,22 @@ const styles = {
 }
 
 export const NavLangSelect = (props) => {
-
-  const handleChange = (selArr) => {
+  const handleChange = (selected) => {
+    let selArr = [];
+    if (selected!=null){
+      selected.forEach(obj => {
+        selArr.push(obj.value)
+      });
+    }
     if (props.onSelectUpdate!=null) {
       props.onSelectUpdate(selArr)
     }
   }
-
-  const selectedLang = "eng";
+  const getValue = (opts, val) => opts.find(o => o.value === val);
+  let selectedLang = "eng";
+  if ((props.languages!=null)&&(props.languages.length>0)){
+    selectedLang = props.languages[0];
+  }
   let langData = [];
   Object.keys(iso639Langs).forEach(langKey => {
     langData.push({
@@ -40,25 +47,29 @@ export const NavLangSelect = (props) => {
     <div style={styles.selectWrapper}>
         <Select
            style={styles.select}
-           disabled={true}
-           simpleValue
+           isDisabled={true}
            onChange={(val) => handleChange(val)}
            options={langData}
-           clearable={false}
-           value={selectedLang}
+           isClearable={false}
+           value={getValue(langData, selectedLang)}
          />
     </div>
   )
 }
 
 export const LanguageSelect = (props) => {
-
-  const handleChange = (selArr) => {
+  const handleChange = (selected) => {
+    let selArr = [];
+    if (selected!=null){
+      selected.forEach(obj => {
+        selArr.push(obj.value)
+      });
+    }
     if (props.onSelectUpdate!=null) {
       props.onSelectUpdate(selArr)
     }
   }
-
+  const getValues = (opts, values) => opts.filter(o => values.indexOf(o.value)>=0);
   const selectedLang = props.myLang;
   let langData = [];
   if (props.languages!=null){
@@ -74,13 +85,13 @@ export const LanguageSelect = (props) => {
         <Select
            style={styles.select}
            autoFocus
-           simpleValue
-           multi={true}
+           isMulti={true}
+           isSearchable={false}
+           isClearable={false}
            onChange={(val) => handleChange(val)}
            options={langData}
-           searchable={false}
-           clearable={false}
-           value={selectedLang}
+           name="langSelect"
+           value={getValues(langData,selectedLang)}
          />
     </div>
   )

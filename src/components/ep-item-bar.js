@@ -1,17 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { GridListTileBar } from 'material-ui/GridList';
-import IconButton from 'material-ui/IconButton';
-import AvPlayCircle from 'material-ui-icons/PlayCircleOutline';
-import AvPauseCircle from 'material-ui-icons/PauseCircleOutline';
-import { LinearProgress } from 'material-ui/Progress';
+import { withStyles } from '@material-ui/core/styles';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import IconButton from '@material-ui/core/IconButton';
+import AvPlayCircle from '@material-ui/icons/PlayCircleOutline';
+import AvPauseCircle from '@material-ui/icons/PauseCircleOutline';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { apiObjGetStorage, apiObjSetStorage } from '../utils/api';
 
 const styles = theme => ({
   titleBar: {
+    alignItems: 'flex-end',
     background:
       'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+  },
+  subtitle: {
+    whiteSpace: 'unset',
   },
   bar: {
     backgroundColor: 'red',
@@ -135,11 +139,15 @@ class EpItemBar extends React.Component {
     const { mSec, mSecDur } = this.state;
     let epTitle = "";
     let idStr = "";
+    let epDescr = <br/>;
     if (episode!=null){
       idStr = episode.id;
       epTitle = episode.title;
+      if (episode.descr!=null) {
+        epDescr = <div style={{whiteSpace:'normal'}}><br/>{episode.descr}</div>;
+      }
       if (epTitle==null){
-        epTitle = idStr;
+        epTitle = idStr+1;
       }
     }
     let percentVal = 0;
@@ -151,10 +159,10 @@ class EpItemBar extends React.Component {
     return (
       <GridListTileBar
         title={epTitle}
-        subtitle={(partOfCurList || isActive) && (<EpItemProgressBar
+        subtitle={(<div>{(partOfCurList || isActive) && (<EpItemProgressBar
                     value={percentVal}
                     classes={classes}
-                  />)}
+                  />)}{epDescr}</div>)}
         classes={{
           root: classes.titleBar,
           title: classes.title,

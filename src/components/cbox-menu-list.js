@@ -1,54 +1,83 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import { isEmptyObj } from '../utils/obj-functions';
-import Divider from 'material-ui/Divider';
-import ActionHome from 'material-ui-icons/Home';
-import SettingsIcon from 'material-ui-icons/Settings';
-import ActionBook from 'material-ui-icons/Book';
-import AvPlayArrow from 'material-ui-icons/PlayArrow';
-import SocialSchool from 'material-ui-icons/School';
-import ImageMusicNote from 'material-ui-icons/MusicNote';
+import Divider from '@material-ui/core/Divider';
+import ActionHome from '@material-ui/icons/Home';
+import SettingsIcon from '@material-ui/icons/Settings';
+import ActionBook from '@material-ui/icons/Book';
+import AvPlayArrow from '@material-ui/icons/PlayArrow';
+import HeadsetIcon from '@material-ui/icons/Headset';
+import SocialSchool from '@material-ui/icons/School';
+import InfoIcon from '@material-ui/icons/Info';
+// import { Group } from 'mdi-material-ui';
+//import ImageMusicNote from '@material-ui/icons/MusicNote';
+import { withNamespaces } from 'react-i18next';
 
-
-const menuList = [
+export const menuList = [
   {
-    title: "My Channel",
+    titleId: "myChannel",
     path: "/",
     icon: (<ActionHome/>),
     color: "green",
     enabled: true,
   },
   {
-    title: "Audio",
+    titleId: "audio",
     path: "/audio",
-    icon: (<AvPlayArrow/>),
+    icon: (<HeadsetIcon/>),
     color: "darkblue",
     enabled: true,
   },
   {
-    title: "Music",
+    titleId: "book",
+    path: "/books",
+    icon: (<ActionBook/>),
+    color: "darkgreen",
+    enabled: true,
+  },
+  {
+    titleId: "training",
+    path: "/training",
+    icon: (<SocialSchool/>),
+    color: "purple",
+    enabled: true,
+  },
+  /*
+  {
+    titleId: "Music",
     path: "/music",
     icon: (<ImageMusicNote/>),
     color: "red",
     enabled: false,
   },
   {
-    title: "Training",
-    path: "/training",
-    icon: (<SocialSchool/>),
-    color: "purple",
-    enabled: false,
-  },
-  {
-    title: "Bible",
+    titleId: "bible",
     path: "/bible",
     icon: (<ActionBook/>),
     color: "black",
     enabled: false,
   },
   {
-    title: "Video",
+    titleId: "page",
+    path: "/pages",
+    icon: (<Group/>),
+    color: "cadetblue",
+    enabled: true,
+  },
+  {
+    titleId: "test",
+    path: "/test",
+    icon: (<ActionBook/>),
+    color: "darkbrown",
+    enabled: true,
+  },
+*/
+  {
+    titleId: "video",
     path: "/video",
     icon: (<AvPlayArrow/>),
     color: "orange",
@@ -57,6 +86,7 @@ const menuList = [
 ]
 
 const CboxMenuList = props => {
+  const {channel,t,hideIcons} = props;
   return (
     <div>
       <List>
@@ -65,12 +95,12 @@ const CboxMenuList = props => {
           if (item.enabled){
             btnStyle.color = item.color;
           }
-          let tmpTitle = item.title;
-          if (!isEmptyObj(props.channel) && (item.path === "/")){
-            tmpTitle = props.channel.title;
+          let tmpTitle = t(item.titleId,{count: 100});
+          if (!isEmptyObj(channel) && (item.path === "/")){
+            tmpTitle = channel.title;
           }
           let tmpIcon  = item.icon;
-          if (props.hideIcons){
+          if (hideIcons){
             tmpIcon = null
           }
           return (
@@ -99,7 +129,20 @@ const CboxMenuList = props => {
             <ListItemIcon>
               <SettingsIcon/>
             </ListItemIcon>
-            <ListItemText primary="Settings" />
+            <ListItemText primary={t("settings")}/>
+          </ListItem>
+        </Link>
+      </List>
+      <List>
+        <Link to={"/about"} style={{ textDecoration: 'none' }}>
+          <ListItem
+            button
+            onClick={(e) => props.onMenuClick(null)}
+          >
+            <ListItemIcon>
+              <InfoIcon/>
+            </ListItemIcon>
+            <ListItemText primary={t("about")}/>
           </ListItem>
         </Link>
       </List>
@@ -107,4 +150,4 @@ const CboxMenuList = props => {
   )
 }
 
-export default CboxMenuList;
+export default withNamespaces()(CboxMenuList);

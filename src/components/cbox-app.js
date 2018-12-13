@@ -1,30 +1,29 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Footer from './footer'
 import CBoxAppBar from '../components/cbox-app-bar';
 import CboxMenuList from '../components/cbox-menu-list';
 import { NavLangSelect, LanguageSelect } from '../components/language-select';
-import Typography from 'material-ui/Typography';
+import Typography from '@material-ui/core/Typography';
 import { Switch, Route, Link } from 'react-router-dom';
-import Drawer from 'material-ui/Drawer';
-import Button from 'material-ui/Button';
-import NavChevronLeft from 'material-ui-icons/ChevronLeft';
+import Drawer from '@material-ui/core/Drawer';
+import Fab from '@material-ui/core/Fab';
+import NavChevronLeft from '@material-ui/icons/ChevronLeft';
 import MyTitlesList from '../components/my-titles-list.js';
 import MediaStore from '../components/media-store.js';
-import Divider from 'material-ui/Divider';
-import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
+import Divider from '@material-ui/core/Divider';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { withNamespaces } from 'react-i18next';
 import verge from 'verge';
-import 'react-select/dist/react-select.css';
-
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
 
 const defaultBackgroundStyle = {
   height: 'auto',
   minHeight: '100%',
   background: 'black'
 };
+
+const versionStr = 'Version 2.12';
 
 const styles = theme => ({
   menuTitle: {
@@ -62,6 +61,15 @@ const styles = theme => ({
     alignItems: 'center',
     padding: '0 8px',
     ...theme.mixins.toolbar,
+  },
+  aboutTitle: {
+    margin: '15px 0px 4px 50px',
+  },
+  aboutMainTitle: {
+    paddingTop: 20,
+    margin: '15px 0px 4px 50px',
+    fontFamily: "'Work Sans', sans-serif",
+    fontSize: 25,
   },
   title: {
     cursor: 'pointer',
@@ -138,8 +146,7 @@ class CboxApp extends React.Component {
 
   handlePlaying = (cur) => {
     if ((cur!=null) && (cur.position!=null)
-      &&this.state.isWaitingForPlayInfo){
-console.log(cur)
+      && this.state.isWaitingForPlayInfo){
       if (cur.position!==this.state.curCheckPos){
         this.setState({
           curCheckPos: cur.position,
@@ -156,22 +163,23 @@ console.log(cur)
     this.setState({isPaused});
   }
 
-  handleReturnToHome = () => {
-    this.props.onSelectView(undefined);
+  handleReturnToHome = (ev,props) => {
+//console.log(props)
+    props.history.goBack()
+//    this.props.onSelectView(undefined);
   }
 
-  VideoPlayer = () => (
+  VideoPlayer = (props) => (
     <div style={defaultBackgroundStyle}>
-      <Button
-        variant="fab"
-        onClick={this.handleReturnToHome}
+      <Fab
+        onClick={(ev) => this.handleReturnToHome(ev,props)}
         className={this.props.classes.floatingButton}
         color="primary"
         component={Link}
         to='/'
       >
         <NavChevronLeft />
-      </Button>
+      </Fab>
       <MediaStore
         myTitles={this.props.myTitles}
         titles={this.props.titles}
@@ -192,20 +200,22 @@ console.log(cur)
     </div>
   )
 
-  Home = (props) => {
-    const {channel} = this.props;
+  Home = (routeProps) => {
+    const { channel, myTitles, featuredList, titles,
+            myLang, curPlay, curPos, curView, loading } = this.props;
     const largeScreen = (this.state.containerWidth>=768);
     return (
     <div style={(this.props.curView!=null)? defaultBackgroundStyle : null}>
       <CBoxAppBar
-        channel={channel}
         displayMenu={true}
         onLeftIconButtonClick={this.handleToggle}
       />
-      {(!this.props.loading) && (<MyTitlesList
-        myTitles={this.props.myTitles}
-        titles={this.props.titles}
-        myLang={this.props.myLang}
+      {(!loading) && (<MyTitlesList
+        myTitles={myTitles}
+        titles={titles}
+        featuredList={featuredList}
+        myLang={myLang}
+        channel={channel}
         filter=''
         onSelectView={this.props.onSelectView}
         onPlayNext={this.props.onPlayNext}
@@ -215,9 +225,9 @@ console.log(cur)
         onMyTitlesUpdate={this.props.onMyTitlesUpdate}
         isPaused={this.state.isPaused}
         largeScreen={largeScreen}
-        curPlay={this.props.curPlay}
-        curPos={this.props.curPos}
-        curView={this.props.curView}
+        curPlay={curPlay}
+        curPos={curPos}
+        curView={curView}
       />)}
     </div>
   )}
@@ -225,16 +235,15 @@ console.log(cur)
   Audio = (props) => {
     return (
     <div style={defaultBackgroundStyle}>
-      <Button
-        variant="fab"
-        onClick={this.handleReturnToHome}
+      <Fab
+        onClick={(ev) => this.handleReturnToHome(ev,props)}
         className={this.props.classes.floatingButton}
         color="primary"
         component={Link}
         to='/'
       >
         <NavChevronLeft />
-      </Button>
+      </Fab>
       <MediaStore
         myTitles={this.props.myTitles}
         titles={this.props.titles}
@@ -255,51 +264,140 @@ console.log(cur)
     </div>
   )}
 
-  Music = () => (
+  Music = (props) => (
     <div>
-      <Button variant="fab"
-        onClick={this.handleReturnToHome}
-        secondary={true}
+      <Fab
+        onClick={(ev) => this.handleReturnToHome(ev,props)}
         className={this.props.classes.floatingButton}
+        color="primary"
         component={Link}
         to='/'
       >
         <NavChevronLeft />
-      </Button>
+      </Fab>
     </div>
   )
 
-  Books = () => (
-    <div/>
+  Books = (props) => (
+    <div style={defaultBackgroundStyle}>
+      <Fab
+        onClick={(ev) => this.handleReturnToHome(ev,props)}
+        className={this.props.classes.floatingButton}
+        color="primary"
+        component={Link}
+        to='/'
+      >
+        <ChevronLeftIcon />
+      </Fab>
+      <MediaStore
+        myTitles={this.props.myTitles}
+        titles={this.props.titles}
+        myLang={this.props.myLang}
+        languages={this.props.languages}
+        filter='epub'
+        fullList
+        onSelectView={this.props.onSelectView}
+        onPlayNext={this.props.onPlayNext}
+        onStartPlay={this.handleStartPlay}
+        onSetPaused={this.handleSetPaused}
+        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
+        onAddTitle={this.props.onAddTitle}
+        onDeleteTitle={this.props.onDeleteTitle}
+        isPaused={this.state.isPaused}
+        curPlay={this.props.curPlay}
+        curPos={this.props.curPos}
+        curView={this.props.curView}
+      />
+    </div>
   )
 
-  Trainng = () => (<div/>)
+  Training = (props) => (
+    <div style={defaultBackgroundStyle}>
+      <Fab
+        onClick={(ev) => this.handleReturnToHome(ev,props)}
+        className={this.props.classes.floatingButton}
+        color="primary"
+        component={Link}
+        to='/'
+      >
+        <ChevronLeftIcon />
+      </Fab>
+      <MediaStore
+        myTitles={this.props.myTitles}
+        titles={this.props.titles}
+        myLang={this.props.myLang}
+        languages={this.props.languages}
+        filter='html'
+        fullList
+        onSelectView={this.props.onSelectView}
+        onPlayNext={this.props.onPlayNext}
+        onStartPlay={this.handleStartPlay}
+        onSetPaused={this.handleSetPaused}
+        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
+        onAddTitle={this.props.onAddTitle}
+        onDeleteTitle={this.props.onDeleteTitle}
+        isPaused={this.state.isPaused}
+        curPlay={this.props.curPlay}
+        curPos={this.props.curPos}
+        curView={this.props.curView}
+      />
+    </div>
+  )
 
   Bible = () => (<div/>)
-
-  Settings = () => {
-    const { classes } = this.props;
+  About = (props) => {
+    const { t, classes } = this.props;
     return (
       <div>
-        <Button
-          variant="fab"
-          onClick={this.handleReturnToHome}
+        <Fab
+          onClick={(ev) => this.handleReturnToHome(ev,props)}
           className={classes.topButton}
           color="primary"
           component={Link}
           to='/'
         >
           <ChevronLeftIcon />
-        </Button>
+        </Fab>
+        <Divider />
+        <Typography
+          type="title"
+          color="inherit"
+          className={classes.aboutMainTitle}
+        >ConnectBox Media UI Client</Typography>
+        <Typography
+          type="title"
+          className={classes.aboutTitle}
+        >{t('swDescription')}</Typography>
+        <Typography
+          type="title"
+          className={classes.aboutTitle}
+        >{versionStr}</Typography>
+      </div>
+    )
+  }
+
+  Settings = (props) => {
+    const { t, classes, defaultLang } = this.props;
+    return (
+      <div>
+        <Fab
+          onClick={(ev) => this.handleReturnToHome(ev,props)}
+          className={classes.topButton}
+          color="primary"
+          component={Link}
+          to='/'
+        >
+          <ChevronLeftIcon />
+        </Fab>
         <Divider />
         <Typography
           type="title"
           color="inherit"
           className={classes.menuTitle}
-        >Navigation language:</Typography>
+        >{t("navLang")}:</Typography>
         <Typography className={classes.smallText}>({lang})</Typography>
         <NavLangSelect
-          languages={["eng"]}
+          languages={[defaultLang]}
           onSelectUpdate={this.handleNavLang}
         />
         <Divider />
@@ -307,7 +405,7 @@ console.log(cur)
           type="title"
           color="inherit"
           className={classes.menuTitle}
-        >Media content languages:</Typography>
+        >{t("mediaContentLang")}:</Typography>
         <LanguageSelect
           languages={this.props.languages}
           myLang={this.props.myLang}
@@ -329,31 +427,12 @@ console.log(cur)
     });
   }
   handleMenuClick = (item) => {
-console.log(item)
     this.setState({open: false});
   }
 
   handleNavLang = (valArr) => {
 console.log(valArr)
   }
-
-/*
-<Divider />
-<Typography
-  type="title"
-  color="inherit"
-  className={classes.menuTitle}
->Series Edit Mode:
-  <Link to="/" style={{ textDecoration: 'none' }}>
-    <Button
-      className={classes.configButton}
-      onClick={this.handleEditMode}
-    >
-      <IconModeEdit/>
-    </Button>
-  </Link>
-</Typography>
-*/
 
   render() {
     const { channel } = this.props;
@@ -379,10 +458,11 @@ console.log(valArr)
           <PropsRoute path='/audio' component={this.Audio} test="test"/>
           <Route path='/music' component={this.Music}/>
           <Route path='/books' component={this.Books}/>
-          <Route path='/training' component={this.Trainng}/>
+          <Route path='/training' component={this.Training}/>
           <Route path='/bible' component={this.Bible}/>
           <Route path='/video' component={this.VideoPlayer}/>
           <Route path='/setting' component={this.Settings}/>
+          <Route path='/about' component={this.About}/>
         </Switch>
         <Footer
           isPaused={this.state.isPaused}
@@ -403,4 +483,4 @@ CboxApp.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(CboxApp);
+export default withStyles(styles, { withTheme: true })(withNamespaces()(CboxApp));

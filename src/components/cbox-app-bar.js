@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
 const styles = {
   appbar: {
@@ -40,13 +40,7 @@ const styles = {
 };
 
 const CBoxAppBar = (props) =>  {
-  const { classes, channel, displayMenu } = props;
-  let tmpTitle = <span style={styles.title}>
-                   <img src={process.env.PUBLIC_URL + '/icon/ConnectBox.png'} alt="" style={styles.logo} />
-                 </span>;
-  if (channel!=null){
-    tmpTitle = <span style={styles.title}>{channel.title}</span>;
-  }
+  const { classes, displayMenu } = props;
   return (
   <AppBar
     className={classes.appbar}
@@ -66,7 +60,9 @@ const CBoxAppBar = (props) =>  {
         color="inherit"
   //        className={styles.flex}
       >
-         {tmpTitle}
+        <span style={styles.title}>
+          <img src={process.env.PUBLIC_URL + '/icon/ConnectBox.png'} alt="" style={styles.logo} />
+        </span>
       </Typography>
     </Toolbar>
   </AppBar>

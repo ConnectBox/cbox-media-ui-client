@@ -25,13 +25,19 @@ export const getIdStr = (curObj,field) => {
 }
 
 export const apiGetConfig = async (confIdStr) => {
-  const response = await axios.get("config/mediaUI/"+confIdStr+".js")
-  const regex = new RegExp('export\\s*var\\s*(\\S*)\\s*=\\s*([\\s\\S]*)');
-  const resData = regex.exec(response.data);
-  if (resData!=null){
-    const resList = JSON.parse(resData[2]);
+  let response, resData; // or use `var` inside the block
+  try {
+    const regex = new RegExp('export\\s*var\\s*(\\S*)\\s*=\\s*([\\s\\S]*)');
+    response = await await axios.get("config/mediaUI/"+confIdStr+".js");
+    resData = regex.exec(response.data);
+    if (resData!=null){
+      const resList = JSON.parse(resData[2]);
 console.log(resList)
-    return Promise.resolve(resList);
+        return Promise.resolve(resList);
+      }
+  } catch (error) {
+      console.error(error) // from axios
+      return Promise.resolve([]); // empty list
   }
   return Promise.reject("Config error in "+confIdStr);
 }
