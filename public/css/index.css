@@ -102,7 +102,6 @@ body #page_container[data-playing=true] #home-div[data-active=true] {
 body #home-div{
   max-width: 768px;
   margin: 0 auto;
-  padding-top: 70px;
 }
 body #home-div[data-active=true] > .serie-div[data-active=false],
 body #home-div > .serie-div > .item-div.not_selected,
@@ -430,6 +429,9 @@ div.tooltip-message.tooltip-message-bottom > span {
     right: 5px;
     bottom: 5%;
   }
+  body #home-div {
+    padding-top: 70px;
+  }
   body #home-div > .serie-div .item-div {
     overflow: hidden;
   }
@@ -526,6 +528,9 @@ div.tooltip-message.tooltip-message-bottom > span {
   .date {
     position: absolute;
     left: 20%;
+  }
+  body #home-div {
+    padding-top: 40px;
   }
   body #home-div > .serie-div[data-disabled=true]:before {
     content: " ";

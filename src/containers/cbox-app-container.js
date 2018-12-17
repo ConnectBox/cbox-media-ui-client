@@ -7,7 +7,6 @@ import localforage from 'localforage';
 import locale2 from 'locale2'
 import {iso639_3b2} from '../iso639-3b2'
 
-
 export default class CboxAppContainer extends React.Component {
   state = {
     langList: ["eng"], // default language
@@ -22,6 +21,7 @@ export default class CboxAppContainer extends React.Component {
     curDur: 0,
     cur: undefined,
     curView: undefined,
+    linkPathList: [],
     loading: true,
     defaultLang: undefined
   }
@@ -121,7 +121,7 @@ console.log(copyTitles)
 
   handlePlayNext = () => {
 console.log("playNext")
-    const {curPlay} = this.state;
+    const {curPlay, titleList} = this.state;
     const {curSerie, curEp} = curPlay;
     if ((curSerie.fileList!=null) && (curSerie.fileList.length>0)
         && (curEp!=null)){
@@ -129,13 +129,41 @@ console.log("playNext")
       let epInx = curEp.id;
       if (curSerie.fileList.length-1>epInx){
         epInx+=1;
-        let newPlayObj = {curSerie};
+        let newPlayObj = {curSerie, curEp: undefined};
         apiObjSetStorage(newPlayObj,"curEp",epInx);
         if (curSerie.fileList[epInx]!=null){
           newPlayObj.curEp=curSerie.fileList[epInx];
+          if ((newPlayObj.curEp.link!=null)&&(newPlayObj.curEp.language!=null)){
+            const gotoLang = newPlayObj.curEp.language;
+            const gotoLink = newPlayObj.curEp.link;
+            const gotoSerie = titleList[gotoLang][gotoLink];
+            newPlayObj = {gotoSerie, curEp: undefined};
+            let gotoEp = undefined;
+            if (gotoSerie.fileList[0]!=null){
+              gotoEp=gotoSerie.fileList[0];
+            }
+            apiObjGetStorage(newPlayObj,"curEp").then((value) => {
+              if (value==null){
+                value=0;
+                apiObjSetStorage(newPlayObj,"curEp",0);
+              }
+  console.log(value)
+              if (gotoSerie.fileList[value]!=null){
+                newPlayObj.curEp=gotoSerie.fileList[value];
+              }
+              this.setState({curPlay: newPlayObj})
+            }).catch((err) => {
+              console.error(err);
+            });
+            newPlayObj = {curSerie: gotoSerie, curEp: gotoEp};
+// Push link level here!
+//   linkPathList: [],
+          }
         }
         this.setState({curPlay: newPlayObj, cur: undefined})
       } else {
+// Pop link level here!
+//   linkPathList: [],
         this.setState({curPlay: undefined, cur: undefined})
       }
     }
@@ -165,7 +193,7 @@ console.log(value)
               newPlayObj.curEp=curSerie.fileList[value];
             }
             this.setState({curPlay: newPlayObj})
-          }).catch(function(err) {
+          }).catch((err) => {
             console.error(err);
           });
         }

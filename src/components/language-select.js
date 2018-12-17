@@ -58,6 +58,7 @@ export const NavLangSelect = (props) => {
 }
 
 export const LanguageSelect = (props) => {
+  const { languages } = props;
   const handleChange = (selected) => {
     let selArr = [];
     if (selected!=null){
@@ -72,12 +73,14 @@ export const LanguageSelect = (props) => {
   const getValues = (opts, values) => opts.filter(o => values.indexOf(o.value)>=0);
   const selectedLang = props.myLang;
   let langData = [];
-  if (props.languages!=null){
-    props.languages.forEach(langKey => {
-      langData.push({
-        label: iso639Langs[langKey].name + " (" +iso639Langs[langKey].engName +")",
-        value: langKey,
-      })
+  if ((languages!=null)&&(languages.length>0)){
+    languages.forEach(langKey => {
+      if (iso639Langs[langKey]!=null){
+        langData.push({
+          label: iso639Langs[langKey].name + " (" +iso639Langs[langKey].engName +")",
+          value: langKey,
+        })
+      }
     });
   }
   return (

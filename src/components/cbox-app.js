@@ -23,7 +23,7 @@ const defaultBackgroundStyle = {
   background: 'black'
 };
 
-const versionStr = 'Version 2.12';
+const versionStr = 'Version 2.14';
 
 const styles = theme => ({
   menuTitle: {
@@ -208,6 +208,7 @@ class CboxApp extends React.Component {
     <div style={(this.props.curView!=null)? defaultBackgroundStyle : null}>
       <CBoxAppBar
         displayMenu={true}
+        largeScreen={largeScreen}
         onLeftIconButtonClick={this.handleToggle}
       />
       {(!loading) && (<MyTitlesList

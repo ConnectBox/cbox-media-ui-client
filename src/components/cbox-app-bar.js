@@ -19,6 +19,16 @@ const styles = {
   logo: {
     height: 54,
   },
+  logoSmall: {
+    paddingTop: 5,
+    height: 35,
+  },
+  toolbar: {
+  },
+  toolbarSmall: {
+    height: 36,
+    minHeight: 36,
+  },
   title: {
     fontFamily: "'Work Sans', sans-serif",
     fontSize: 30,
@@ -40,12 +50,14 @@ const styles = {
 };
 
 const CBoxAppBar = (props) =>  {
-  const { classes, displayMenu } = props;
+  const { classes, displayMenu, largeScreen } = props;
   return (
   <AppBar
     className={classes.appbar}
   >
-    <Toolbar>
+    <Toolbar
+      className={largeScreen ? classes.toolBar : classes.toolbarSmall }
+    >
       {displayMenu && (<IconButton
         className={classes.menuButton}
         color="primary"
@@ -61,7 +73,10 @@ const CBoxAppBar = (props) =>  {
   //        className={styles.flex}
       >
         <span style={styles.title}>
-          <img src={process.env.PUBLIC_URL + '/icon/ConnectBox.png'} alt="" style={styles.logo} />
+          <img
+            src={process.env.PUBLIC_URL + '/icon/ConnectBox.png'}
+            alt=""
+            style={largeScreen ? styles.logo : styles.logoSmall} />
         </span>
       </Typography>
     </Toolbar>
