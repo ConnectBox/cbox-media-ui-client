@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import { useTranslation } from 'react-i18next'
 
-const styles = {
+const useStyles = makeStyles(theme => ({
   appbar: {
     position: 'fixed',
     backgroundColor: 'whitesmoke',
@@ -35,6 +35,12 @@ const styles = {
     textDecoration: 'none',
     width: '100%',
   },
+  version: {
+    fontFamily: "'Work Sans', sans-serif",
+    fontSize: 16,
+    textDecoration: 'none',
+    paddingLeft: 34,
+  },
   root: {
     width: '100%',
   },
@@ -47,10 +53,14 @@ const styles = {
   menuButton: {
     marginLeft: -22,
   },
-};
+}))
 
 const CBoxAppBar = (props) =>  {
-  const { classes, displayMenu, largeScreen } = props;
+  const { displayMenu, versionStr, largeScreen } = props
+  const { t } = useTranslation()
+  const classes = useStyles()
+  let useVersionStr
+  if (versionStr) useVersionStr = t("version") + " " +versionStr
   return (
   <AppBar
     className={classes.appbar}
@@ -70,22 +80,23 @@ const CBoxAppBar = (props) =>  {
         className={classes.title}
         type="title"
         color="inherit"
-  //        className={styles.flex}
       >
-        <span style={styles.title}>
+        <span className={classes.title}>
           <img
             src={process.env.PUBLIC_URL + '/icon/ConnectBox.png'}
             alt=""
-            style={largeScreen ? styles.logo : styles.logoSmall} />
+            className={largeScreen ? classes.logo : classes.logoSmall} />
         </span>
       </Typography>
     </Toolbar>
+    {versionStr && (<Typography
+      className={classes.version}
+      type="title"
+      color="inherit"
+    >{useVersionStr}
+    </Typography>)}
   </AppBar>
-  );
+  )
 }
 
-CBoxAppBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(CBoxAppBar);
+export default CBoxAppBar

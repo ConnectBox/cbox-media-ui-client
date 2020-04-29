@@ -1,9 +1,9 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useRef } from 'react'
 import ReactPlayer from 'react-player'
+import { makeStyles } from '@material-ui/core/styles'
+import useBrowserData from '../hooks/useBrowserData'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   playerWrapper: {
     position: 'relative',
     paddingTop: '56.25%'
@@ -13,89 +13,61 @@ const styles = theme => ({
     top: 0,
     left: 0,
   }
-});
+}))
 
-class CboxVideoPlayer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      startPos: 0,
-      duration: undefined,
-    };
-  }
+const CboxVideoPlayer = (props) => {
+  const classes = useStyles()
+  const [startPos, setStartPos] = useState(0)
+  const [duration, setDuration] = useState(undefined)
+  const {size, width, height, largeScreen} = useBrowserData()
+  const {playFromPosition, isPaused, url, fullSize} = props
+  const playerRef = useRef()
 
-  movePos = (newPos) => {
-    this.setState({startPos: newPos});
-    const durMSec = this.player.getDuration() * 1000;
+  const movePos = (newPos) => {
+    setStartPos(newPos)
+    const durMSec = playerRef.current.getDuration() * 1000
     if (durMSec>newPos){
-      this.player.seekTo(newPos/1000);
+      playerRef.current.seekTo(newPos/1000)
     }
   }
 
-  componentDidMount = () => {
-    const {playFromPosition} = this.props;
-    if ((playFromPosition != null)&&!isNaN(playFromPosition)&&(playFromPosition>0)) {
-      this.movePos(playFromPosition);
+  useEffect(() => {
+    if ((playerRef.current!=null) && (playFromPosition != null)&&!isNaN(playFromPosition)&&(playFromPosition>0)) {
+      movePos(playFromPosition)
     }
-  }
+  },[playFromPosition,playerRef])
 
-  componentDidUpdate = (prevProps) => {
-    const {playFromPosition} = this.props;
-    if ((playFromPosition != null)&&!isNaN(playFromPosition)&&(playFromPosition>0)) {
-      if (playFromPosition !== prevProps.playFromPosition) {
-        this.movePos(playFromPosition);
-      }
-    }
-  }
-
-  onDuration = (duration) => {
-    const newPos = this.state.startPos;
-    const durMSec = duration * 1000;
+  const onDuration = (duration) => {
+    const newPos = startPos
+    const durMSec = duration * 1000
     if (durMSec>newPos){
-      this.player.seekTo(newPos/1000);
+      playerRef.current.seekTo(newPos/1000)
     }
-    if (this.props.onDuration!=null){
-      this.props.onDuration(duration)
+    if (props.onDuration!=null){
+      props.onDuration(duration)
     }
   }
 
-  ref = player => {
-    this.player = player
-  }
+  const configTest = { file: {
+      forceVideo: true
+    }}
+  return (
+    <div className={fullSize ? classes.playerWrapper : null}>
+      <ReactPlayer
+        ref={playerRef}
+        className={fullSize ? classes.reactPlayer : null}
+        url={url}
+        config={configTest}
+        onEnded={props.onEnded}
+        onDuration={onDuration}
+        onProgress={props.onProgress}
+        width={fullSize ? '100%' : width}
+        height={fullSize ? '100%' : height}
+        playing={!isPaused}
+        controls
+      />
+    </div>
+  )
+}
 
-  render() {
-    const { classes, isPaused, url, fullSize } = this.props;
-    let { width, height } = this.props;
-    const configTest = { file: {
-        forceVideo: true
-      }}
-    if (fullSize) {
-      width = '100%';
-      height = '100%';
-    }
-    return (
-      <div className={fullSize ? classes.playerWrapper : null}>
-        <ReactPlayer
-          ref={this.ref}
-          className={fullSize ? classes.reactPlayer : null}
-          url={url}
-          config={configTest}
-          onEnded={this.props.onEnded}
-          onDuration={this.onDuration}
-          onProgress={this.props.onProgress}
-          width={width}
-          height={height}
-          playing={!isPaused}
-          controls
-        />
-      </div>
-    )
-  }
-};
-
-CboxVideoPlayer.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles, { withTheme: true })(CboxVideoPlayer);
+export default CboxVideoPlayer

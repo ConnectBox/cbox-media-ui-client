@@ -1,42 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 
-class CboxTrainingPlayer extends React.Component {
-  state = {
-    location: undefined,
-    curResources: [],
-  }
+const CboxTrainingPlayer = (props) => {
+  const [location, setLocation] = useState(undefined)
 
-  onLocationChanged = checkLoc => {
-    const {curResources} = this.state;
-    if ((curResources!=null)&&(curResources.length>0)) {
-      const curObj = curResources.find(obj => {
-        const pos = obj.href.lastIndexOf(checkLoc);
-        return (pos>=0)&&(obj.href.length===pos+checkLoc.length);
-      }) // Checking if suitable resource is available
-      let location=checkLoc; // use initial checkLoc as default
-      if (curObj!=null){ // Found resource - use the full href
-        location = curObj.href
-      }
-      this.setState({location})
+  useEffect(() => {
+    if (props.location != null){
+      setLocation(props.location)
     }
-  }
+  }, [props.location])
 
-  render() {
-    const {url,height} = this.props;
-    const {location} = this.state;
-    if (location==null) {
-      return (
-        <iframe
-          title="Training"
-          src={url}
-          frameBorder="0"
-          overflow="hidden"
-          width="100%"
-          height={height}
-        />
-      )
-    }
-  }
-};
+  const onLocationChanged = checkLoc => props.onProgress && props.onProgress(checkLoc)
 
-export default CboxTrainingPlayer;
+  if (props.url==null) {
+    return <div/>
+  } else {
+    return (
+      <iframe
+        title="Training"
+        src={props.url}
+        frameBorder="0"
+        overflow="hidden"
+        width="100%"
+        height={props.height}
+      />
+    )
+  }
+}
+
+export default CboxTrainingPlayer

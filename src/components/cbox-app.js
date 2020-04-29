@@ -1,33 +1,65 @@
-import React from 'react'
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Footer from './footer'
-import CBoxAppBar from '../components/cbox-app-bar';
-import CboxMenuList from '../components/cbox-menu-list';
-import { NavLangSelect, LanguageSelect } from '../components/language-select';
-import Typography from '@material-ui/core/Typography';
-import { Switch, Route, Link } from 'react-router-dom';
-import Drawer from '@material-ui/core/Drawer';
-import Fab from '@material-ui/core/Fab';
-import NavChevronLeft from '@material-ui/icons/ChevronLeft';
-import MyTitlesList from '../components/my-titles-list.js';
-import MediaStore from '../components/media-store.js';
-import Divider from '@material-ui/core/Divider';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { withNamespaces } from 'react-i18next';
-import verge from 'verge';
+import React, { useState, useContext } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import * as Router from 'react-router-dom'
+import Drawer from '@material-ui/core/Drawer'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
+import Checkbox from '@material-ui/core/Checkbox';
+import Fab from '@material-ui/core/Fab'
+import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from "@material-ui/icons/Close"
+import ItemList  from './item-list'
+import Divider from '@material-ui/core/Divider'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import DownloadIcon from '@material-ui/icons/CloudDownload'
+import Snackbar from '@material-ui/core/Snackbar'
+import { BookOpen, TestTube } from 'mdi-material-ui'
+import { useTranslation } from 'react-i18next'
+import { matchPath } from 'react-router'
+import CBoxAppBar from './cbox-app-bar'
+import CboxMenuList from './cbox-menu-list'
+import { isEmptyObj } from '../utils/obj-functions'
+import { NavLangSelect, LanguageSelect } from './language-select'
+import CboxBibleNavigation from './cbox-bible-navigation'
+import { iso639Langs } from '../iso639-1-full.js'
+import { iso639_3b2 } from '../iso639-3b2'
+import { loadingStateValue } from '../utils/config-data'
+import useMediaPlayer from "../hooks/useMediaPlayer"
+import useBrowserData from "../hooks/useBrowserData"
+import useSettings from "../hooks/useSettings"
 
 const defaultBackgroundStyle = {
   height: 'auto',
   minHeight: '100%',
   background: 'black'
-};
+}
 
-const versionStr = 'Version 2.14';
+const versionStr = 'Version 2.19'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
+  iFrame: {
+    overflow: 'visible',
+    width: '100%',
+  },
   menuTitle: {
     margin: '15px 0px 4px 20px',
+  },
+  checkBox: {
+    margin: '15px 0px 4px 20px',
+  },
+  aboutTitle: {
+    margin: '10px 0px 4px 50px',
+  },
+  aboutMainTitle: {
+    paddingTop: 20,
+    margin: '15px 0px 4px 50px',
+    fontFamily: "'Work Sans', sans-serif",
+    fontSize: 25,
+  },
+  topButton: {
+    margin: 10,
   },
   floatingButton: {
     margin: 0,
@@ -80,26 +112,68 @@ const styles = theme => ({
     top: 70,
     fontSize: 10,
   },
-});
+}))
 
-const lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
+const lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage)
 
 const renderMergedProps = (component, ...rest) => {
-  const finalProps = Object.assign({}, ...rest);
+  const finalProps = Object.assign({}, ...rest)
   return (
     React.createElement(component, finalProps)
-  );
+  )
 }
 
 const PropsRoute = ({ component, ...rest }) => {
   return (
-    <Route {...rest} render={routeProps => {
-      return renderMergedProps(component, routeProps, rest);
+    <Router.Route {...rest} render={routeProps => {
+      return renderMergedProps(component, routeProps, rest)
     }}/>
-  );
+  )
 }
 
-class CboxApp extends React.Component {
+const CboxApp = (props) => {
+  const [open, setOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
+  const [showAll, setShowAll] = useState(false)
+  const [changedGUID, setChangedGUID] = useState(false)
+  const [chEditMode, setChEditMode] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState("")
+  const [verifiedPaths, setVerifiedPaths] = useState([])
+  const [requiredReload, setRequiredReload] = useState(false)
+// translation path - for instance: "/location/data.en.properties"
+
+  const settings = useSettings()
+  const { loadingState, channel,
+          percentList, percentDownload,
+          versionStr,
+          progressTextList, progressTextDownload,
+          titles, languages,
+          featuredList, myLang,
+          handleLangUpdate, handleMyLangUpdate,
+          updateChannelTitle, updatePageLayout,
+          updateTranslation, addLang, addLabel,
+          defaultLang } = settings
+  const { t } = useTranslation()
+  const classes = useStyles()
+  const { width } = useBrowserData()
+  const { playNext, startPlay, isPaused, setIsPaused,
+          curPlay, curPos } = useMediaPlayer()
+  const handleClose = () => setOpen(false)
+  const handleEditClose = (history) => history.goBack()
+
+  const handleStartBiblePlay = (curSerie,bookObj,id) => {
+    const {bk} = bookObj
+    const curEp = {bibleType: true,bk,id}
+    setIsPaused(false)
+    startPlay(id,curSerie,curEp)
+  }
+
+  const handleExitBibleNavigation = () => {
+    startPlay(undefined)
+    setIsPaused(false)
+  }
+/*
   state = {
     open: false,
     langOpen: false,
@@ -107,254 +181,108 @@ class CboxApp extends React.Component {
     isWaitingForPlayInfo: false,
     curCheckPos: undefined,
     editMode: false,
+    size: "xs",
+    orientation: undefined,
+    showAll: false,
     containerWidth: this.calcContainerWidth(),
+    containerHeight: this.calcContainerHeight(),
   }
 
   calcContainerWidth() {
-    let retVal = verge.viewportW();
-    return retVal;
+    let retVal = verge.viewportW()
+    return retVal
   }
 
-  componentDidMount = () => {
-    window.addEventListener('resize', () => {
-      const containerWidth = this.calcContainerWidth();
-      this.setState({containerWidth});
-    }, false);
+  calcContainerHeight() {
+    let retVal = verge.viewportH()
+    return retVal
   }
 
-  handleFinishedPlaying = () => {
-    this.props.onPlayNext();
-  }
-
-  handleStopPlaying = () => {
-    this.props.onStartPlay(undefined);
-    this.setState({
-      isPaused: false,
-      curCheckPos: undefined,
-      isWaitingForPlayInfo: false
-    });
-  }
-
-  handleStartPlay = (inx,curSerie,curEp) => {
-    this.setState({
-      isPaused: false,
-      curCheckPos: undefined,
-      isWaitingForPlayInfo: true
-    });
-    this.props.onStartPlay(inx,curSerie,curEp);
-  }
-
-  handlePlaying = (cur) => {
-    if ((cur!=null) && (cur.position!=null)
-      && this.state.isWaitingForPlayInfo){
-      if (cur.position!==this.state.curCheckPos){
-        this.setState({
-          curCheckPos: cur.position,
-          isWaitingForPlayInfo: false
-        })
-      } else {
-        this.setState({curCheckPos: cur.position})
-      }
+  calcSize(){
+    const containerWidth = this.calcContainerWidth()
+    const containerHeight = this.calcContainerHeight()
+    const orientation = containerWidth > containerHeight ? "landscape" : "portrait"
+    let size = "xs"
+    if (containerWidth>=1200){
+      size = "xl"
+    } else if (containerWidth>=992){
+      size = "lg"
+    } else if (containerWidth>=768){
+      size = "md"
+    } else if (containerWidth>=576){
+      size = "sm"
     }
-    this.props.onPlaying(cur)
+    this.setState({containerHeight, containerWidth, size, orientation})
   }
+*/
 
-  handleSetPaused = (isPaused) => {
-    this.setState({isPaused});
+const Home = (props) => {
+  const largeScreen = (width>=768)
+  const chDefExists = ((channel!=null)
+                      && (channel.title!=null))
+  let isCurBible = false
+  let curBiblePlay
+  if (curPlay!=null) curBiblePlay = JSON.parse(JSON.stringify(curPlay))
+  if ((curPlay!=null)&&(curPlay.curSerie!=null)&&(curPlay.curSerie.mediaType!=null)){
+    isCurBible = (curPlay.curSerie.mediaType==="bible")
+    if (isCurBible) curBiblePlay.curEp = undefined
   }
+  const loading = (loadingState!==loadingStateValue.finishedOk)
+console.log(loading)
+  return (
+//    <div style={(curView!=null)? defaultBackgroundStyle : null}>
+  <div style={defaultBackgroundStyle}>
+    <CBoxAppBar
+      displayMenu={true}
+      onLeftIconButtonClick={() => setOpen(!open)}
+    />
+    {isCurBible && (<CboxBibleNavigation
+      isPaused={isPaused}
+      onReset={props.onReset}
+      onExitNavigation={handleExitBibleNavigation}
+    />)}
+    {(!loading) && !isCurBible && (<ItemList
+      filter=''
+      onReset={props.onReset}
+      largeScreen={largeScreen}
+      curPlay={isCurBible ? curBiblePlay : curPlay}
+    />)}
+  </div>
+)}
 
-  handleReturnToHome = (ev,props) => {
-//console.log(props)
-    props.history.goBack()
-//    this.props.onSelectView(undefined);
-  }
-
-  VideoPlayer = (props) => (
-    <div style={defaultBackgroundStyle}>
-      <Fab
-        onClick={(ev) => this.handleReturnToHome(ev,props)}
-        className={this.props.classes.floatingButton}
-        color="primary"
-        component={Link}
-        to='/'
-      >
-        <NavChevronLeft />
-      </Fab>
-      <MediaStore
-        myTitles={this.props.myTitles}
-        titles={this.props.titles}
-        myLang={this.props.myLang}
-        languages={this.props.languages}
-        filter='vid'
-        fullList
-        onSelectView={this.props.onSelectView}
-        onPlayNext={this.props.onPlayNext}
-        onStartPlay={this.handleStartPlay}
-        onSetPaused={this.handleSetPaused}
-        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
-        isPaused={this.state.isPaused}
-        curPlay={this.props.curPlay}
-        curPos={this.props.curPos}
-        curView={this.props.curView}
-      />
-    </div>
-  )
-
-  Home = (routeProps) => {
+/*
     const { channel, myTitles, featuredList, titles,
-            myLang, curPlay, curPos, curView, loading } = this.props;
-    const largeScreen = (this.state.containerWidth>=768);
+            myLang, curPlay, curPos, loading } = props
+
+    let showObj = featuredList
+    if (showAll) {
+      Object.keys(titles).forEach(lang => {
+        showObj[lang] = Object.keys(titles[lang]).map(key => key)
+      })
+    }
+*/
+
+  const Store = ({filter}) => {
     return (
-    <div style={(this.props.curView!=null)? defaultBackgroundStyle : null}>
-      <CBoxAppBar
-        displayMenu={true}
-        largeScreen={largeScreen}
-        onLeftIconButtonClick={this.handleToggle}
-      />
-      {(!loading) && (<MyTitlesList
-        myTitles={myTitles}
-        titles={titles}
-        featuredList={featuredList}
-        myLang={myLang}
-        channel={channel}
-        filter=''
-        onSelectView={this.props.onSelectView}
-        onPlayNext={this.props.onPlayNext}
-        onStartPlay={this.handleStartPlay}
-        onReset={this.props.onReset}
-        onSetPaused={this.handleSetPaused}
-        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
-        isPaused={this.state.isPaused}
-        largeScreen={largeScreen}
-        curPlay={curPlay}
-        curPos={curPos}
-        curView={curView}
-      />)}
-    </div>
-  )}
-
-  Audio = (props) => {
-    return (
-    <div style={defaultBackgroundStyle}>
+    <div className={classes.defaultBackgroundStyle}>
       <Fab
-        onClick={(ev) => this.handleReturnToHome(ev,props)}
-        className={this.props.classes.floatingButton}
+        className={classes.floatingButton}
         color="primary"
-        component={Link}
-        to='/'
-      >
-        <NavChevronLeft />
-      </Fab>
-      <MediaStore
-        myTitles={this.props.myTitles}
-        titles={this.props.titles}
-        myLang={this.props.myLang}
-        languages={this.props.languages}
-        filter='aud'
-        fullList
-        onSelectView={this.props.onSelectView}
-        onPlayNext={this.props.onPlayNext}
-        onStartPlay={this.handleStartPlay}
-        onSetPaused={this.handleSetPaused}
-        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
-        isPaused={this.state.isPaused}
-        curPlay={this.props.curPlay}
-        curPos={this.props.curPos}
-        curView={this.props.curView}
-      />
-    </div>
-  )}
-
-  Music = (props) => (
-    <div>
-      <Fab
-        onClick={(ev) => this.handleReturnToHome(ev,props)}
-        className={this.props.classes.floatingButton}
-        color="primary"
-        component={Link}
-        to='/'
-      >
-        <NavChevronLeft />
-      </Fab>
-    </div>
-  )
-
-  Books = (props) => (
-    <div style={defaultBackgroundStyle}>
-      <Fab
-        onClick={(ev) => this.handleReturnToHome(ev,props)}
-        className={this.props.classes.floatingButton}
-        color="primary"
-        component={Link}
+        component={Router.Link}
         to='/'
       >
         <ChevronLeftIcon />
       </Fab>
-      <MediaStore
-        myTitles={this.props.myTitles}
-        titles={this.props.titles}
-        myLang={this.props.myLang}
-        languages={this.props.languages}
-        filter='epub'
-        fullList
-        onSelectView={this.props.onSelectView}
-        onPlayNext={this.props.onPlayNext}
-        onStartPlay={this.handleStartPlay}
-        onSetPaused={this.handleSetPaused}
-        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
-        onAddTitle={this.props.onAddTitle}
-        onDeleteTitle={this.props.onDeleteTitle}
-        isPaused={this.state.isPaused}
-        curPlay={this.props.curPlay}
-        curPos={this.props.curPos}
-        curView={this.props.curView}
-      />
     </div>
-  )
+  )}
 
-  Training = (props) => (
-    <div style={defaultBackgroundStyle}>
-      <Fab
-        onClick={(ev) => this.handleReturnToHome(ev,props)}
-        className={this.props.classes.floatingButton}
-        color="primary"
-        component={Link}
-        to='/'
-      >
-        <ChevronLeftIcon />
-      </Fab>
-      <MediaStore
-        myTitles={this.props.myTitles}
-        titles={this.props.titles}
-        myLang={this.props.myLang}
-        languages={this.props.languages}
-        filter='html'
-        fullList
-        onSelectView={this.props.onSelectView}
-        onPlayNext={this.props.onPlayNext}
-        onStartPlay={this.handleStartPlay}
-        onSetPaused={this.handleSetPaused}
-        onMyTitlesUpdate={this.props.onMyTitlesUpdate}
-        onAddTitle={this.props.onAddTitle}
-        onDeleteTitle={this.props.onDeleteTitle}
-        isPaused={this.state.isPaused}
-        curPlay={this.props.curPlay}
-        curPos={this.props.curPos}
-        curView={this.props.curView}
-      />
-    </div>
-  )
-
-  Bible = () => (<div/>)
-  About = (props) => {
-    const { t, classes } = this.props;
+  const About = () => {
     return (
       <div>
         <Fab
-          onClick={(ev) => this.handleReturnToHome(ev,props)}
           className={classes.topButton}
           color="primary"
-          component={Link}
+          component={Router.Link}
           to='/'
         >
           <ChevronLeftIcon />
@@ -372,20 +300,19 @@ class CboxApp extends React.Component {
         <Typography
           type="title"
           className={classes.aboutTitle}
-        >{versionStr}</Typography>
+        >{t('version')+" "+versionStr}</Typography>
       </div>
     )
   }
 
-  Settings = (props) => {
-    const { t, classes, defaultLang } = this.props;
+  const Settings = (props) => {
+    const { t, classes, defaultLang } = props
     return (
       <div>
         <Fab
-          onClick={(ev) => this.handleReturnToHome(ev,props)}
           className={classes.topButton}
           color="primary"
-          component={Link}
+          component={Router.Link}
           to='/'
         >
           <ChevronLeftIcon />
@@ -399,7 +326,7 @@ class CboxApp extends React.Component {
         <Typography className={classes.smallText}>({lang})</Typography>
         <NavLangSelect
           languages={[defaultLang]}
-          onSelectUpdate={this.handleNavLang}
+          onSelectUpdate={(valArr) => console.log(valArr)}
         />
         <Divider />
         <Typography
@@ -413,75 +340,53 @@ class CboxApp extends React.Component {
           onSelectUpdate={this.props.onMyLangUpdate}
         />
         <Divider />
+        <FormControlLabel
+          className={classes.checkBox}
+          control={
+            <Checkbox
+              checked={showAll}
+              onChange={setShowAll(!showAll)}
+              value="showAll"
+            />
+          }
+          label="Show additional library content"
+        />
       </div>
     )
   }
 
-  handleToggle = () => this.setState({open: !this.state.open});
-  handleClose = () => this.setState({open: false});
-  handleMenuSelect = () => this.setState({langOpen: true});
-  handleLangClose = () => this.setState({langOpen: false});
-  handleEditMode = () => {
-    this.setState({
-      langOpen: false,
-      editMode: true,
-    });
-  }
-  handleMenuClick = (item) => {
-    this.setState({open: false});
-  }
-
-  handleNavLang = (valArr) => {
-console.log(valArr)
-  }
-
-  render() {
-    const { channel } = this.props;
-    const isCurPlaying = (this.props.curPlay!=null);
-    return (
-      <div
-        id="page_container"
-        data-playing={isCurPlaying}
+  const isCurPlaying = (curPlay!=null)
+  return (
+    <div
+      id="page_container"
+      data-playing={isCurPlaying}
+    >
+      <Drawer
+        docked="false"
+        width={200}
+        open={open}
+        onClose={handleClose}
       >
-        <Drawer
-          docked="false"
-          width={200}
-          open={this.state.open}
-          onClose={this.handleClose}
-        >
-          <CboxMenuList
-            channel={channel}
-            onMenuClick={this.handleMenuClick}
-          />
-        </Drawer>
-        <Switch>
-          <Route exact path='/' component={this.Home}/>
-          <PropsRoute path='/audio' component={this.Audio} test="test"/>
-          <Route path='/music' component={this.Music}/>
-          <Route path='/books' component={this.Books}/>
-          <Route path='/training' component={this.Training}/>
-          <Route path='/bible' component={this.Bible}/>
-          <Route path='/video' component={this.VideoPlayer}/>
-          <Route path='/setting' component={this.Settings}/>
-          <Route path='/about' component={this.About}/>
-        </Switch>
-        <Footer
-          isPaused={this.state.isPaused}
-          isWaitingForPlayInfo={this.state.isWaitingForPlayInfo}
-          onSetPaused={this.handleSetPaused}
-          curPlay={this.props.curPlay}
-          curPos={this.props.curPos}
-          onPlaying={this.handlePlaying}
-          onFinishedPlaying={this.handleFinishedPlaying}
-          onStopCallback={this.handleStopPlaying}/>
-      </div>
-    );
-  }
+        <CboxMenuList
+          channel={channel}
+          onMenuClick={() => setOpen(false)}
+        />
+      </Drawer>
+      <Router.Switch>
+        <Router.Route exact path='/' component={Home}/>
+        <PropsRoute path='/audio' component={Store} filter="aud"/>
+        <PropsRoute path='/music' component={Store} filter="music"/>
+        <PropsRoute path='/books' component={Store} filter="epub"/>
+        <PropsRoute path='/pdf' component={Store} filter="pdf"/>
+        <PropsRoute path='/training' component={Store} filter="html"/>
+        <PropsRoute path='/bible' component={Store} filter="bible"/>
+        <PropsRoute path='/download' component={Store} filter="dwnl"/>
+        <PropsRoute path='/video' component={Store} filter="vid"/>
+        <Router.Route path='/setting' component={Settings}/>
+        <Router.Route path='/about' component={About}/>
+      </Router.Switch>
+    </div>
+  )
 }
 
-CboxApp.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles, { withTheme: true })(withNamespaces()(CboxApp));
+export default CboxApp
