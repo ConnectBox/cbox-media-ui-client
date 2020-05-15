@@ -10,7 +10,7 @@ import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
 import CreateIcon from '@material-ui/icons/Create'
 import DeleteIcon from '@material-ui/icons/Delete'
-import AvPlay from '@material-ui/icons/PlayArrow'
+import PlayArrow from '@material-ui/icons/PlayArrow'
 import CloseIcon from '@material-ui/icons/Close'
 import { Download } from 'mdi-material-ui'
 import { getImgOfObj } from '../utils/obj-functions'
@@ -339,7 +339,8 @@ console.log(tmpEp)
             color="primary"
             className={classes.buttonPlay}
             onClick={(ev) => handlePlay(ev,item)}
-          ><AvPlay /></Fab>
+          >
+            {item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}          </Fab>
           {(item && item.download) && (<Fab
             onClick={(e) => handleDownload(e)}
             color="primary"
@@ -375,7 +376,6 @@ console.log(tmpEp)
   return (
     <div
       className={classes.root}
-      id="home-div"
       data-active={hasCurView}
       data-disabled={(curEditModeInx!=null)}
     >
@@ -426,8 +426,12 @@ console.log(tmpEp)
                     <div className={classes.filler}/>
                   </div>
                 )}
-                {infoTile ? <InfoTileItem item={item} img={useImg} inx={inx}/>
-                : <ItemBar item={item} onClick={(ev) => handleClickItemIndex(ev,item,inx)}/>}
+                {infoTile ? <InfoTileItem item={item} img={useImg}/> : (
+                  <ItemBar
+                    bkgrd={item.mediaType ? menuList[item.mediaType].bkgrd : "lightgrey"}
+                    useIcon={item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}
+                    item={item} onClick={(ev) => handleClickItemIndex(ev,item,inx)}/>
+                )}
                 {infoTile && showAllEp && epList
                 && (<EpList
                   title={curSer.title}
@@ -439,6 +443,7 @@ console.log(tmpEp)
                   useHeight={height}
                   width={width}
                   allowEdit={true}
+                  useIcon={item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}
                   imgSrc={getImgOfObj(curSer)}/>)}
               </GridListTile>
           )

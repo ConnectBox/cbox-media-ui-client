@@ -36,7 +36,7 @@ const defaultBackgroundStyle = {
   background: 'black'
 }
 
-const versionStr = 'Version 2.19'
+const versionStr = 'Version 2.20'
 
 const useStyles = makeStyles(theme => ({
   iFrame: {

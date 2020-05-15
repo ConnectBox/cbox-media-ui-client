@@ -4,8 +4,8 @@ import CardContent from '@material-ui/core/CardContent'
 import GridList from '@material-ui/core/GridList'
 import GridListTile from '@material-ui/core/GridListTile'
 import Typography from '@material-ui/core/Typography'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import ExpandLessIcon from '@material-ui/icons/ExpandLess'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
 import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
 import CreateIcon from '@material-ui/icons/Create'
@@ -74,6 +74,13 @@ const useStyles = makeStyles(theme => ({
   },
   gridList: {
     flexWrap: 'nowrap',
+    overflow: 'hidden',
+    overflowY: 'hidden',
+    // Promote the list into its own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)',
+  },
+  gridListScroll: {
+    flexWrap: 'nowrap',
     overflow: 'scroll',
     overflowY: 'hidden',
     // Promote the list into its own layer on Chrome. This cost memory but helps keeping high FPS.
@@ -114,12 +121,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const EpList = (props) => {
-  const { channel, fullList, filter, title, serie, navButton, multiRow, onClick,
-          onSetPaused, onPlayNext, onAddTitle, onDelete,
+  const { channel, fullList, filter, title, serie, navButton, onClick,
+          onSetPaused, onPlayNext, onAddTitle, onDelete, useIcon,
           onSelectFromLibrary, onTitlesUpdate, epList, imgSrc } = props
   const [expanded,setExpanded] = useState(!navButton)
-  const [showInfo,setShowInfo] = useState(undefined)
-  const [lastInRow,setLastInRow] = useState(undefined)
   const {size, width, height, largeScreen} = useBrowserData()
   const settings = useSettings()
   const { titles, languages, myLang,
@@ -136,11 +141,6 @@ const EpList = (props) => {
   const handlePlay = (ev,item) => {
     ev.stopPropagation()
     startPlay(0,item)
-  }
-  const handleCloseDetails = (ev) => {
-    ev.stopPropagation()
-    setShowInfo(undefined)
-    setLastInRow(undefined)
   }
   const handleClick = (ev,idStr) => {
     setCurSer(undefined)
@@ -189,7 +189,7 @@ const EpList = (props) => {
   let useBkgrdColor = 'rgba(15, 4, 76, 0.68)'
   if (curFilter==="vid"){
     useBkgrdColor = 'rgba(255, 215, 0, 0.78)'
-  } else if (curFilter==="epub"){
+  } else if ((curFilter==="epub")||(curFilter==="dwnl")){
     useBkgrdColor = 'rgba(120, 215, 120, 0.78)'
   } else if (curFilter==="html"){
     useBkgrdColor = 'rgba(81, 184, 233, 0.68)'
@@ -227,104 +227,69 @@ const EpList = (props) => {
   const maxEntries = (navButton && !expanded) ? colSize : nbrOfEntries
   const showNav = navButton && (nbrOfEntries > colSize)
   const showNavButton = showNav && !expanded
-  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
-  const showMulti = multiRow && expanded
-  const expandIcon = expanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>
+//  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
+  const useColSize = colSize + (showNavButton ? 0 : 0.1)
+  const expandIcon = expanded ? <RemoveIcon/> : <AddIcon/>
   const toggleExpand = (ev) => {
     ev.stopPropagation()
     setExpanded(!expanded)
   }
-  const setInfoInx = (ev,epInx,maxInx) => {
+  const handleClickItemIndex = (ev,item,ep) => {
     ev.stopPropagation()
-    const doEnable = epInx!==showInfo
-    setShowInfo(doEnable ? epInx : undefined)
-    const moduloVal = epInx % colSize
-    const divVal = Math.trunc(epInx / colSize)
-    let tmpLastInRow = ((divVal +1) * colSize) -1
-    // Fix when last item is first in row
-    if (tmpLastInRow>=maxInx) tmpLastInRow = maxInx -1
-    setLastInRow(doEnable ? tmpLastInRow : undefined)
-  }
-  const handleClickItemIndex = (ev,item,index) => {
-    var tmpEp = undefined
-    ev.stopPropagation()
-    if ((item!=null) && (item.fileList!=null)
-        && (item.fileList[index]!=null)){
-      tmpEp=item.fileList[index]
-    }
     if (startPlay!=null) {
-console.log(tmpEp)
+console.log(ep)
 //      setSerieCurEp(tmpEp)
-      startPlay(index,item,tmpEp)
+      startPlay(0,item,ep)
     }
   }
 /*
 {curIsSerie && showAllEp && (<IconButton
   className={classes.actionButton}
-  onClick={handleCloseShowAllEp}><ExpandLessIcon/></IconButton>)}
+  onClick={handleCloseShowAllEp}><RemoveIcon/></IconButton>)}
 {curIsSerie && !showAllEp && (<IconButton
   className={classes.actionButton}
-  onClick={handleShowList}><ExpandMoreIcon/></IconButton>)}
+  onClick={handleShowList}><AddIcon/></IconButton>)}
 */
-  const InfoTileItem = ({item,inx}) => {
-    return (
-      <div>
-        <Typography style={subtitleStyle}>{item.description}</Typography>
-        <IconButton className={classes.actionButton}><ExpandLessIcon/></IconButton>
-        <IconButton className={classes.actionButton}><ExpandMoreIcon/></IconButton>
-        <Fab color="primary" onClick={(ev) => handlePlay(ev,item)}><AvPlay /></Fab>
-        <Fab color="primary" onClick={(ev) => handleCloseDetails(ev)}><CloseIcon /></Fab>
-      </div>
-    )
-  }
-  const embellishInfo = (arr) => {
-    const newEp = {...arr[showInfo], id: lastInRow+"b"}
-//    return (showInfo!=null) ? arrayInsert(arr,showInfo+1,newEp) : arr
-    return (showInfo!=null) ? arrayInsert(arr,lastInRow+1,newEp) : arr
-  }
-    return (
-      <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
-        <Typography className={classes.areaHeadline} type="headline" component="h2">
-          {title} {showNav && (<IconButton
-            className={classes.iconButton}
-            onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
-        </Typography>
-        <GridList
-          className={multiRow ? classes.gridListMulti : classes.gridList}
-          cols={useColSize}
-        >
-          {epList && embellishInfo(epList.slice(0,maxEntries)).map((ep,inx) => {
-            const useImg = ep.image ? getImgOfObj(ep) : imgSrc
-            const tileRootClass = (ep===tmpPlaySer) ? classes.tileRootRed : classes.tileRoot
-            const tileRootClassSmall = (ep===tmpPlaySer) ?
-                                          classes.tileRootRedSmall : classes.tileRootSmall
-            const showTile = (inx===(showInfo))
-            const infoTile = (inx===(lastInRow+1))
-            return (
-              <GridListTile
-                key={ep.id}
-                cols={infoTile ? colSize : 1}
-                rows={infoTile ? 1.3 : 1}
-                className={showTile ? classes.showTileRoot : infoTile ? classes.infoTileRoot : (width>=480) ? tileRootClass : tileRootClassSmall}
-                onClick={(ev) => setInfoInx(ev,inx,maxEntries)}
-              >
-                {!infoTile && (<img
-                  className={infoTile ? classes.imageLessSize : classes.image}
-                  src={useImg}
-                  alt={ep.title}
-                  onClick={(ev) => setInfoInx(ev,inx,maxEntries)}
-                />)}
-                {infoTile ? <InfoTileItem item={ep} inx={inx}/>
-                : <ItemBar item={ep} onClick={(ev) => onClick(ev,serie,ep)}/>}
-              </GridListTile>
-            )}
+  return (
+    <CardContent className={classes.cardContent} >
+      <Typography className={classes.areaHeadline} type="headline" component="h2">
+        {title} {showNav && (<IconButton
+          className={classes.iconButton}
+          onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
+      </Typography>
+      <GridList
+        className={showNavButton ? classes.gridList : classes.gridListScroll}
+        cols={useColSize}
+      >
+        {epList.map((ep,inx) => {
+          const useImg = ep.image ? getImgOfObj(ep) : imgSrc
+          const tileRootClass = (ep===tmpPlaySer) ? classes.tileRootRed : classes.tileRoot
+          const tileRootClassSmall = (ep===tmpPlaySer) ?
+                                        classes.tileRootRedSmall : classes.tileRootSmall
+          return (
+            <GridListTile
+              key={ep.id}
+              cols={1}
+              rows={1}
+              className={(width>=480) ? tileRootClass : tileRootClassSmall}
+              onClick={(ev) => handleClickItemIndex(ev,serie,ep)}
+            >
+              <img
+                className={classes.image}
+                src={useImg}
+                alt={ep.title}
+                onClick={(ev) => handleClickItemIndex(ev,serie,ep)}
+              />
+              : <ItemBar useIcon={useIcon} item={ep} onClick={(ev) => handleClickItemIndex(ev,serie,ep)}/>}
+            </GridListTile>
           )}
-        </GridList>
-        {showNavButton && (<Fab
-          className={classes.floatingButton}
-          onClick={(ev) => toggleExpand(ev)}>{expandIcon}</Fab>)}
-      </CardContent>
-    )
+        )}
+      </GridList>
+      {showNavButton && (<Fab
+        className={classes.floatingButton}
+        onClick={(ev) => toggleExpand(ev)}>{expandIcon}</Fab>)}
+    </CardContent>
+  )
 }
 
 export default EpList

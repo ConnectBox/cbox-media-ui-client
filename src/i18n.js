@@ -1,5 +1,5 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
 import locale2 from 'locale2'
 
 i18n
@@ -32,7 +32,7 @@ i18n
           save: 'save',
           ok: 'OK',
           myChannel: "My Channel",
-          audio: "Audio",
+          aud: "Audio",
           book: "Book",
           pdf: "Pdf",
           download: "Download",
@@ -55,7 +55,7 @@ i18n
           page_plural: "Pages",
           test: "Test",
           bible: "Bible",
-          video: "Video",
+          vid: "Video",
           settings: "Settings",
           version: "Version",
           about: "About",
@@ -252,7 +252,7 @@ i18n
           save: 'speichern',
           ok: 'OK',
           myChannel: "Mein Medienkanal",
-          audio: "Audio",
+          aud: "Audio",
           book: "Buch",
           book_plural: "Bücher",
           download: "Herunterladen",
@@ -261,7 +261,7 @@ i18n
           page_plural: "Seiten",
           test: "Test",
           bible: "Bibel",
-          video: "Video",
+          vid: "Video",
           settings: "Einstellungen",
           about: "Info",
           language: "Sprache",
@@ -280,6 +280,6 @@ i18n
         },
       },
     },
-  });
+  })
 
-export default i18n;
+export default i18n

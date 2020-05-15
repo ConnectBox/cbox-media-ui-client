@@ -2,12 +2,13 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import GridListTileBar from '@material-ui/core/GridListTileBar'
 import IconButton from '@material-ui/core/IconButton'
-import AvPlayCircle from '@material-ui/icons/PlayArrow'
-import AvPauseCircle from '@material-ui/icons/Pause'
+import PlayArrow from '@material-ui/icons/PlayArrow'
+import Pause from '@material-ui/icons/Pause'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { apiObjGetStorage, apiObjSetStorage } from '../utils/api'
 import useMediaPlayer from '../hooks/useMediaPlayer'
 import useLibrary from '../hooks/useLibrary'
+import { menuList } from './cbox-menu-list'
 
 const useStyles = makeStyles(theme => ({
   titleBar: {
@@ -26,7 +27,6 @@ const useStyles = makeStyles(theme => ({
   },
   playPause: {
     color: 'white',
-    backgroundColor: 'rgba(65,65,65,0.4)',
   },
   bar: {
     backgroundColor: 'red',
@@ -48,18 +48,26 @@ const ItemProgressBar = ({classes,value}) => (
     }}
     value={value}/>
 )
-const PlayButton = ({classes,onClick}) => (
-  <IconButton size="small" className={classes.playPause} onClick={onClick}>
-    <AvPlayCircle/>
+const PlayButton = ({useIcon,bkgrd,classes,onClick}) => (
+  <IconButton
+    size="small"
+    className={classes.playPause}
+    style={{backgroundColor: bkgrd}}
+    onClick={onClick}>
+    {useIcon || <PlayArrow/>}
   </IconButton>
 )
-const PauseButton = ({classes,onClick}) => (
-  <IconButton size="small" className={classes.playPause} onClick={onClick}>
-    <AvPauseCircle/>
+const PauseButton = ({useIcon,bkgrd,classes,onClick}) => (
+  <IconButton
+    size="small"
+    className={classes.playPause}
+    style={{backgroundColor: bkgrd}}
+    onClick={onClick}>
+    {useIcon || <Pause/>}
   </IconButton>
 )
 
-const ItemBar = ({item, showDescr, fullDescr, onClick}) => {
+const ItemBar = ({item, useIcon, bkgrd, showDescr, fullDescr, onClick}) => {
   const classes = useStyles()
 //  const [mSec, setMSec] = useState(undefined)
 //  const [mSecDur, setMSecDur] = useState(undefined)
@@ -107,8 +115,8 @@ const ItemBar = ({item, showDescr, fullDescr, onClick}) => {
       }}
       actionIcon={
       ((isPaused)||(!isActive))
-       ?(<PlayButton classes={classes} onClick={(e) => onClick(e)}/>
-      ):(<PauseButton classes={classes} onClick={(e) => onClick(e)}/>
+       ?(<PlayButton useIcon={useIcon} classes={classes} bkgrd={bkgrd} onClick={(e) => onClick(e)}/>
+      ):(<PauseButton useIcon={useIcon} classes={classes} bkgrd={bkgrd} onClick={(e) => onClick(e)}/>
       )}
     />
   )

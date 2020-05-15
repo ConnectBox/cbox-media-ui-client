@@ -14,84 +14,69 @@ import HeadsetIcon from '@material-ui/icons/Headset'
 import SocialSchool from '@material-ui/icons/School'
 import InfoIcon from '@material-ui/icons/Info'
 import { Group } from 'mdi-material-ui'
+import { Download } from 'mdi-material-ui'
 // import ImageMusicNote from '@material-ui/icons/MusicNote'
 import { withTranslation } from 'react-i18next'
 
-export const menuList = [
-  {
-    titleId: "myChannel",
-    path: "/",
-    icon: (<ActionHome/>),
-    color: "green",
-    enabled: true,
-  },
-/*
-  {
-    titleId: "aud",
+
+export const menuList = {
+  aud: {
     path: "/audio",
     icon: (<HeadsetIcon/>),
     color: "darkblue",
-    enabled: true,
+    bkgrd: "#00008b80",
   },
-  {
-    titleId: "vid",
+  vid: {
     path: "/video",
     icon: (<AvPlayArrow/>),
     color: "orange",
-    enabled: true,
+    bkgrd: "#62632680",
   },
-  {
-    titleId: "bible",
+  bible: {
     path: "/bible",
     icon: (<ActionBook/>),
     color: "black",
-    enabled: true,
+    bkgrd: "#00000080",
   },
-  {
-    titleId: "html",
+  html: {
     path: "/training",
     icon: (<SocialSchool/>),
     color: "purple",
-    enabled: true,
+    bkgrd: "#80008080",
   },
-  {
-    titleId: "epub",
+  epub: {
     path: "/books",
     icon: (<ActionBook/>),
-    color: "darkgreen",
-    enabled: true,
+    color: "#118511",
+    bkgrd: "#11851180",
   },
-  {
-    titleId: "pdf",
+  pdf: {
     path: "/pdf",
     icon: (<ActionBook/>),
-    color: "#b15353",
-    enabled: true,
+    color: "#dc2e2e",
+    bkgrd: "#dc2e2eb3",
   },
-  /*
-  {
-    titleId: "dwnl",
+  dwnl: {
     path: "/download",
     icon: (<Download/>),
     color: "darkgoldenrod",
-    enabled: true,
+    bkgrd: "#b8860b80",
   },
-  {
-    titleId: "page",
+/*
+  page: {
     path: "/pages",
     icon: (<Group/>),
     color: "cadetblue",
-    enabled: true,
+    bkgrd: "#5f9ea080",
   },
-  {
-    titleId: "music",
+  music: {
     path: "/music",
     icon: (<ImageMusicNote/>),
     color: "red",
-    enabled: false,
+    bkgrd: "#ff000080",
   },
-  */
-]
+*/
+}
 
 const linkStyle =  {
   color: "black",
@@ -100,33 +85,31 @@ const linkStyle =  {
 
 const CboxMenuList = props => {
   const {channel,t,hideIcons,onMenuClick} = props
+  let tmpTitle = ""
+  if (!isEmptyObj(channel)) {
+    tmpTitle = channel.title
+  }
   return (
     <div>
       <List>
-        {menuList.map((item,index) => {
-          let btnStyle =  {color: "lightgrey"}
-          if (item.enabled){
-            btnStyle.color = item.color
-          }
-          let tmpTitle = t(item.titleId,{count: 100})
-          if (!isEmptyObj(channel) && (item.path === "/")){
-            tmpTitle = channel.title
-          }
-          let tmpIcon  = item.icon
-          if (hideIcons){
-            tmpIcon = null
-          }
+        <Link key={"home"} to={"/"} style={linkStyle}>
+          <ListItem button onClick={(e) => onMenuClick(null)}>
+            <ListItemIcon style={{color: "green"}}>
+              {!hideIcons && <ActionHome/>}
+            </ListItemIcon>
+            <ListItemText primary={tmpTitle}/>
+          </ListItem>
+        </Link>
+        {Object.keys(menuList).map((key,index) => {
+          const item = menuList[key]
+          const {path, icon, color} = item
           return (
-            <Link key={index} to={item.path} style={linkStyle}>
-              <ListItem
-                button
-                onClick={item.enabled? (e) => onMenuClick(item) : null}
-              >
-                <ListItemIcon style={btnStyle}
-                >
-                  {tmpIcon}
+            <Link key={index} to={path} style={linkStyle}>
+              <ListItem button onClick={(e) => onMenuClick(item)}>
+                <ListItemIcon style={{color}}>
+                  {!hideIcons && icon}
                 </ListItemIcon>
-                <ListItemText primary={tmpTitle}/>
+                <ListItemText primary={t(key,{count: 100})}/>
               </ListItem>
             </Link>
           )
@@ -135,10 +118,7 @@ const CboxMenuList = props => {
       <Divider />
       <List>
         <Link to={"/setting"} style={linkStyle}>
-          <ListItem
-            button
-            onClick={(e) => onMenuClick(null)}
-          >
+          <ListItem button onClick={(e) => onMenuClick(null)}>
             <ListItemIcon>
               <SettingsIcon/>
             </ListItemIcon>
@@ -148,10 +128,7 @@ const CboxMenuList = props => {
       </List>
       <List>
         <Link to={"/about"} style={linkStyle}>
-          <ListItem
-            button
-            onClick={(e) => onMenuClick(null)}
-          >
+          <ListItem button onClick={(e) => onMenuClick(null)}>
             <ListItemIcon>
               <InfoIcon/>
             </ListItemIcon>
