@@ -244,7 +244,6 @@ console.log(loading)
     {(!loading) && !isCurBible && (<ItemList
       filter=''
       onReset={props.onReset}
-      largeScreen={largeScreen}
       curPlay={isCurBible ? curBiblePlay : curPlay}
     />)}
   </div>

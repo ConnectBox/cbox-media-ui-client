@@ -48,22 +48,10 @@ const ItemProgressBar = ({classes,value}) => (
     }}
     value={value}/>
 )
-const PlayButton = ({useIcon,bkgrd,classes,onClick}) => (
-  <IconButton
-    size="small"
-    className={classes.playPause}
-    style={{backgroundColor: bkgrd}}
-    onClick={onClick}>
-    {useIcon || <PlayArrow/>}
-  </IconButton>
-)
-const PauseButton = ({useIcon,bkgrd,classes,onClick}) => (
-  <IconButton
-    size="small"
-    className={classes.playPause}
-    style={{backgroundColor: bkgrd}}
-    onClick={onClick}>
-    {useIcon || <Pause/>}
+const ItemButton = ({useIcon,bkgrd,classes,onClick}) => (
+  <IconButton size="small" className={classes.playPause}
+    style={{backgroundColor: bkgrd}} onClick={onClick}>
+    {useIcon}
   </IconButton>
 )
 
@@ -113,11 +101,12 @@ const ItemBar = ({item, useIcon, bkgrd, showDescr, fullDescr, onClick}) => {
         title: classes.title,
         subtitle: classes.subtitle,
       }}
-      actionIcon={
-      ((isPaused)||(!isActive))
-       ?(<PlayButton useIcon={useIcon} classes={classes} bkgrd={bkgrd} onClick={(e) => onClick(e)}/>
-      ):(<PauseButton useIcon={useIcon} classes={classes} bkgrd={bkgrd} onClick={(e) => onClick(e)}/>
-      )}
+      actionIcon={(
+        <ItemButton
+          useIcon={(((isPaused) || (!isActive)) ? (useIcon || <PlayArrow/>) : <Pause/>)}
+          classes={classes}
+          bkgrd={bkgrd}
+          onClick={(e) => onClick(e)}/>)}
     />
   )
 }

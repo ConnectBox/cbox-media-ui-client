@@ -3,6 +3,7 @@ import { Swipeable } from "react-swipeable"
 import { EpubView } from 'react-reader'
 import { makeStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
+import ReadiumNavigator from '@readium/navigator-web'
 
 const useStyles = makeStyles(theme => ({
   container: {

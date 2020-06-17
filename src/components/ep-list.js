@@ -224,11 +224,11 @@ const EpList = (props) => {
     backgroundColor: 'rgba(0,0,0,0.3)',
   }
   const nbrOfEntries = epList && epList.length
-  const maxEntries = (navButton && !expanded) ? colSize : nbrOfEntries
+  const maxEntries = (navButton && !expanded) ? colSize +1 : nbrOfEntries
   const showNav = navButton && (nbrOfEntries > colSize)
   const showNavButton = showNav && !expanded
-//  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
-  const useColSize = colSize + (showNavButton ? 0 : 0.1)
+  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
+//  const useColSize = colSize + (showNavButton ? 0 : 0.1)
   const expandIcon = expanded ? <RemoveIcon/> : <AddIcon/>
   const toggleExpand = (ev) => {
     ev.stopPropagation()

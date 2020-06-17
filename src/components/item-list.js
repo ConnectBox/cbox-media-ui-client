@@ -155,175 +155,56 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const ItemList = (props) => {
-  const { channel, fullList, filter, title, serie, navButton, multiRow, onClick,
-          onSetPaused, onPlayNext, onAddTitle, onDelete,
-          onSelectFromLibrary, onTitlesUpdate } = props
+  const { channel, fullList, filter, title, serie, navButton, multiRow } = props
   const [expanded,setExpanded] = useState(!navButton)
-  const [showInfo,setShowInfo] = useState(undefined)
-  const [showAllEp,setShowAllEp] = useState(false)
   const [lastInRow,setLastInRow] = useState(undefined)
+  const [showInfo,setShowInfo] = useState(undefined)
   const {size, width, height, largeScreen} = useBrowserData()
+  const { playNext, startPlay, isPaused, setIsPaused,
+          curView, curPlay, curPos } = useMediaPlayer()
   const settings = useSettings()
   const { titles, languages, myLang,
           featuredTitles, handleFeaturedTitlesUpdate } = settings
-  const { playNext, startPlay, isPaused, setIsPaused,
-          curView, curPlay, curPos } = useMediaPlayer()
   const { t } = useTranslation()
   const classes = useStyles()
-  const [curSer, setCurSer] = useState(undefined)
-  const [serieCurEp, setSerieCurEp] = useState(undefined)
   const [createNew, setCreateNew] = useState(true)
-  const [curEditModeInx, setCurEditModeInx] = useState(undefined)
-  const [openConfigDialogue, setOpenConfigDialogue] = useState(false)
   const [curFilter, setCurFilter] = useState(undefined)
   const [anchorEl, setAnchorEl] = useState(null)
-  const handleSelectFromLibrary = () => onSelectFromLibrary && onSelectFromLibrary()
-  const handleUpdate = (ser) => (action) => onTitlesUpdate && onTitlesUpdate(ser,action)
-//  const handleSetEditMode = (isSet,inx) => setCurEditModeInx(isSet ? inx : undefined)
-  const handleStartEdit = () => {
-    setCreateNew(false)
-    setOpenConfigDialogue(true)
-  }
   const handleClose = () => setAnchorEl(null)
-  const handleCloseDialog = () => {
-    setOpenConfigDialogue(false)
-    setCurEditModeInx(undefined)
-  }
-  const handleSetEditMode = (ev) => {
-    ev.stopPropagation()
-    handleStartEdit()
-  }
-  const handleDelete = (ev,item) => {
-console.log(item)
-    ev.stopPropagation()
-    handleFeaturedTitlesUpdate(item,"delete")
-  }
-  const handlePlay = (ev,item) => {
-    ev.stopPropagation()
-    startPlay(0,item)
-  }
-  const handleDownload = (ev,item) => {
-    ev.stopPropagation()
-    console.log(item)
-  }
-  const handleCloseDetails = (ev) => {
-    ev.stopPropagation()
-    setShowInfo(undefined)
-    setLastInRow(undefined)
-  }
-  const handleAddClick = (ev) => {
-    setAnchorEl(ev.currentTarget)
-  }
-  const handleClick = (ev,idStr) => {
-    setCurSer(undefined)
-    setCreateNew(true)
-    setOpenConfigDialogue(true)
-    setAnchorEl(null)
-    setCurFilter(idStr)
-  }
-
-  let curTitleList = []
-  if (titles){
-    if (fullList){
-      languages.forEach(lang => {
-        if (titles[lang]!=null){
-          Object.keys(titles[lang]).forEach((title) => {
-            curTitleList.push(titles[lang][title])
-          })
-        }
-      })
-    } else if ((titles)&&(featuredTitles)){
-      Object.keys(featuredTitles).filter(
-        lang => myLang.indexOf(lang)>=0
-      ).forEach((lang) => {
-        if (titles[lang]!=null){
-          featuredTitles[lang].forEach((title) => {
-            if (titles[lang][title]!=null){
-              curTitleList.push(titles[lang][title])
-            }
-          })
-        }
-      })
-    }
-  }
-  let useBkgrdColor = 'rgba(15, 4, 76, 0.68)'
-  if (curFilter==="vid"){
-    useBkgrdColor = 'rgba(255, 215, 0, 0.78)'
-  } else if (curFilter==="epub"){
-    useBkgrdColor = 'rgba(120, 215, 120, 0.78)'
-  } else if (curFilter==="html"){
-    useBkgrdColor = 'rgba(81, 184, 233, 0.68)'
-  }
-  const hasCurView = (curView!= null)
-  let featuredStr = t("featured")
-  if ((channel) && (channel.title)) {
-    featuredStr = channel.title
-  }
-  let showListTitle = ((channel!=null) || (curTitleList.length>0))
-  if (hasCurView) {
-    showListTitle = false
-  }
-
-  let tmpPlaySer = undefined
-  const sizeToCol = {"xl": 5, "lg": 4, "md": 3}
-  let colSize = sizeToCol[size] || 2
-  let curHeight = height-150
-  if (width<=380){
-    colSize = 1
-    if (curHeight>300){
-      curHeight = 300
-    }
-  }
-  const subtitleStyle = {
-    whiteSpace: 'unset',
-    lineHeight: '1.2',
-    marginTop: 10,
-    marginLeft: 15,
-    fontSize: '0.8rem',
-    textOverflow: 'clip',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  }
-  const nbrOfEntries = curTitleList && curTitleList.length
-  const maxEntries = (navButton && !expanded) ? colSize : nbrOfEntries
-  const showNav = navButton && (nbrOfEntries > colSize)
-  const showNavButton = showNav && !expanded
-  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
-  const showMulti = multiRow && expanded
-  const expandIcon = expanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>
-  const toggleExpand = (ev) => {
-    ev.stopPropagation()
-    setExpanded(!expanded)
-  }
-  const handleShowAllEp = (ev,val) => {
-    ev.stopPropagation()
-    setShowAllEp(val)
-  }
-  const setInfoInx = (ev,cur,epInx,maxInx) => {
-    ev.stopPropagation()
-    setCurSer(cur)
+  const [showAllEp,setShowAllEp] = useState(false)
+  const handleSetInx = (epInx) => {
     const doEnable = epInx!==showInfo
     setShowInfo(doEnable ? epInx : undefined)
     const moduloVal = epInx % colSize
     const divVal = Math.trunc(epInx / colSize)
     let tmpLastInRow = ((divVal +1) * colSize) -1
     // Fix when last item is first in row
-    if (tmpLastInRow>=maxInx) tmpLastInRow = maxInx -1
+    if (tmpLastInRow>=maxEntries) tmpLastInRow = maxEntries -1
     setLastInRow(doEnable ? tmpLastInRow : undefined)
-    setShowAllEp(false)
   }
-  const handleClickItemIndex = (ev,item,index) => {
-    var tmpEp = undefined
+  const handleClick = (ev,inx) => {
     ev.stopPropagation()
-    if ((item!=null) && (item.fileList!=null)
-        && (item.fileList[index]!=null)){
-      tmpEp=item.fileList[index]
-    }
-    if (startPlay!=null) {
-console.log(tmpEp)
-//      setSerieCurEp(tmpEp)
-      startPlay(0,item,tmpEp)
-    }
+    setShowAllEp(false)
+    handleSetInx(inx)
   }
+  const handleCloseDetails = (ev) => {
+    ev.stopPropagation()
+    setShowAllEp(false)
+    handleSetInx(undefined)
+  }
+  const SerItem = ({item,img,inx}) => (
+    <div
+      onClick={(ev) => handleClick(ev,inx)}
+      style={(true) ? {cursor: "default"} : null}
+    >
+      <img
+        className={classes.image}
+        src={img}
+        alt={item.title}
+      />
+      <div className={classes.filler}/>
+    </div>
+  )
   const InfoTileItem = ({item,img,inx}) => (
     <div>
       <div className={classes.infoTileContent}>
@@ -364,20 +245,104 @@ console.log(tmpEp)
       />
     </div>
   )
+  const handlePlay = (ev,item) => {
+    ev.stopPropagation()
+    startPlay(0,item)
+  }
+  const handleDownload = (ev,item) => {
+    ev.stopPropagation()
+    console.log(item)
+  }
+  const handleShowAllEp = (ev,val) => {
+    ev.stopPropagation()
+    setShowAllEp(val)
+  }
+  const handleClickItemIndex = (ev,item,index) => {
+    var tmpEp = undefined
+    ev.stopPropagation()
+    if ((item!=null) && (item.fileList!=null)
+        && (item.fileList[index]!=null)){
+      tmpEp=item.fileList[index]
+    }
+    if (startPlay!=null) {
+console.log(tmpEp)
+      startPlay(0,item,tmpEp)
+    }
+  }
+  let curTitleList = []
+  if (titles){
+    if (fullList){
+      languages.forEach(lang => {
+        if (titles[lang]!=null){
+          Object.keys(titles[lang]).forEach((title) => {
+            curTitleList.push(titles[lang][title])
+          })
+        }
+      })
+    } else if ((titles)&&(featuredTitles)){
+      Object.keys(featuredTitles).filter(
+        lang => myLang.indexOf(lang)>=0
+      ).forEach((lang) => {
+        if (titles[lang]!=null){
+          featuredTitles[lang].forEach((title) => {
+            if (titles[lang][title]!=null){
+              curTitleList.push(titles[lang][title])
+            }
+          })
+        }
+      })
+    }
+  }
+  let useBkgrdColor = 'rgba(15, 4, 76, 0.68)'
+  if (curFilter==="vid"){
+    useBkgrdColor = 'rgba(255, 215, 0, 0.78)'
+  } else if ((curFilter==="epub")||(curFilter==="dwnl")){
+    useBkgrdColor = 'rgba(120, 215, 120, 0.78)'
+  } else if (curFilter==="html"){
+    useBkgrdColor = 'rgba(81, 184, 233, 0.68)'
+  }
+  let featuredStr = t("featured")
+  if ((channel) && (channel.title)) {
+    featuredStr = channel.title
+  }
+  const sizeToCol = {"xl": 5, "lg": 4, "md": 3}
+  let colSize = sizeToCol[size] || 2
+  let curHeight = height-150
+  if (width<=380){
+    colSize = 1
+    if (curHeight>300){
+      curHeight = 300
+    }
+  }
+  const subtitleStyle = {
+    whiteSpace: 'unset',
+    lineHeight: '1.2',
+    marginTop: 10,
+    marginLeft: 15,
+    fontSize: '0.8rem',
+    textOverflow: 'clip',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  }
+  const nbrOfEntries = curTitleList && curTitleList.length
+  const maxEntries = (navButton && !expanded) ? colSize : nbrOfEntries
+  const showNav = navButton && (nbrOfEntries > colSize)
+  const showNavButton = showNav && !expanded
+  const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
+  const showMulti = multiRow && expanded
+  const expandIcon = expanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>
+  const toggleExpand = (ev) => {
+    ev.stopPropagation()
+    setExpanded(!expanded)
+  }
   const embellishInfo = (arr) => {
     const newEp = {...arr[showInfo], id: lastInRow+"b"}
-//    return (showInfo!=null) ? arrayInsert(arr,showInfo+1,newEp) : arr
-
-//onEdit={handleEditEpClick}
-//onClickPlay={handleClickItemIndex}
-
     return (showInfo!=null) ? arrayInsert(arr,lastInRow+1,newEp) : arr
   }
+  let tmpPlaySer = undefined
   return (
     <div
       className={classes.root}
-      data-active={hasCurView}
-      data-disabled={(curEditModeInx!=null)}
+      data-disabled={false}//curEditModeInx!=null
     >
     <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
       <Typography className={classes.areaHeadline} type="headline" component="h2">
@@ -390,64 +355,47 @@ console.log(tmpEp)
         cols={useColSize}
       >
         {curTitleList && embellishInfo(curTitleList.slice(0,maxEntries)).map((item,inx) => {
-          const serImgSrcStr = getImgOfObj(item)
-          let imgSrcStr = serImgSrcStr
-          let curIsSerie = (serieCurEp!=null)
-          if ((curIsSerie) && (item!=null) && (item.fileList!=null)) {
-            curIsSerie = (item.fileList.length>1)
-          }
-//          const useImg = ser.image ? getImgOfObj(ser) : ""
-          const useImg = imgSrcStr
           const showTile = (inx===(showInfo))
           const infoTile = (inx===(lastInRow+1))
           const tileRootClass = (item===tmpPlaySer) ? classes.tileRootRed : classes.tileRoot
           const tileRootClassSmall = (item===tmpPlaySer) ?
                                     classes.tileRootRedSmall : classes.tileRootSmall
-          const epList = curSer && curSer.fileList
-          const disabled = false
+          const epList = item && item.fileList
+          const serImgSrcStr = getImgOfObj(item)
+          let imgSrcStr = serImgSrcStr
+//          const useImg = ser.image ? getImgOfObj(ser) : ""
+          const useImg = imgSrcStr
           return (
-              <GridListTile
-                key={item.id ? item.id : item.curPath + item.title}
-                cols={infoTile ? colSize : 1}
-                rows={infoTile && showAllEp && epList ? 2.5 : infoTile ? 1.3 : 1}
-                className={showTile ? classes.showTileRoot : infoTile ? classes.infoTileRoot : (width>=480) ? tileRootClass : tileRootClassSmall}
-                onClick={(ev) => setInfoInx(ev,item,inx,maxEntries)}
-              >
-                {!infoTile && (
-                  <div
-                    onClick={(ev) => setInfoInx(ev,item,inx,maxEntries)}
-                    style={(disabled) ? {cursor: "default"} : null}
-                  >
-                    <img
-                      className={classes.image}
-                      src={useImg}
-                      alt={item.title}
-                    />
-                    <div className={classes.filler}/>
-                  </div>
-                )}
-                {infoTile ? <InfoTileItem item={item} img={useImg}/> : (
-                  <ItemBar
-                    bkgrd={item.mediaType ? menuList[item.mediaType].bkgrd : "lightgrey"}
-                    useIcon={item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}
-                    item={item} onClick={(ev) => handleClickItemIndex(ev,item,inx)}/>
-                )}
-                {infoTile && showAllEp && epList
-                && (<EpList
-                  title={curSer.title}
-                  epList={epList}
-                  navButton
-                  onClick={(ev,ser,ep) => console.log(ep)}
-                  serie={curSer}
-                  isPaused={false}
-                  useHeight={height}
-                  width={width}
-                  allowEdit={true}
+            <GridListTile
+              key={item.id ? item.id : item.curPath + item.title}
+              cols={infoTile ? colSize : 1}
+              rows={infoTile && showAllEp && epList ? 2.5 : infoTile ? 1.3 : 1}
+              className={showTile ? classes.showTileRoot : infoTile ? classes.infoTileRoot : (width>=480) ? tileRootClass : tileRootClassSmall}
+              onClick={(ev) => handleClick(ev,inx)}
+            >
+              {!infoTile && <SerItem item={item} inx={inx} img={useImg}/>}
+              {infoTile ? <InfoTileItem item={item} img={useImg}/> : (
+                <ItemBar
+                  bkgrd={item.mediaType ? menuList[item.mediaType].bkgrd : "lightgrey"}
                   useIcon={item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}
-                  imgSrc={getImgOfObj(curSer)}/>)}
-              </GridListTile>
-          )
-        })}
+                  item={item} onClick={(ev) => handleClickItemIndex(ev,item,inx)}/>
+              )}
+              {infoTile && showAllEp && epList
+              && (<EpList
+                title={item.title}
+                epList={epList}
+                navButton
+                onClick={(ev,ser,ep) => console.log(ep)}
+                serie={item}
+                isPaused={false}
+                useHeight={height}
+                width={width}
+                allowEdit={true}
+                useIcon={item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>}
+                imgSrc={getImgOfObj(item)}/>)}
+            </GridListTile>
+          )}
+        )}
       </GridList>
       {showNavButton && (<Fab
         className={classes.floatingButton}
