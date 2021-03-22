@@ -1,14 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import GridListTileBar from '@material-ui/core/GridListTileBar'
 import IconButton from '@material-ui/core/IconButton'
-import PlayArrow from '@material-ui/icons/PlayArrow'
-import Pause from '@material-ui/icons/Pause'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { apiObjGetStorage, apiObjSetStorage } from '../utils/api'
-import useMediaPlayer from '../hooks/useMediaPlayer'
-import useLibrary from '../hooks/useLibrary'
-import { menuList } from './cbox-menu-list'
 
 const useStyles = makeStyles(theme => ({
   titleBar: {
@@ -36,9 +30,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
 }))
-//    backgroundColor: 'rgba(44,135,213,0.4)',
 
-const calcPercent = (dur) => (dur.position * 100 / dur.duration)
 const ItemProgressBar = ({classes,value}) => (
   <LinearProgress
     variant="determinate"
@@ -55,47 +47,32 @@ const ItemButton = ({useIcon,bkgrd,classes,onClick}) => (
   </IconButton>
 )
 
-const ItemBar = ({item, useIcon, bkgrd, showDescr, fullDescr, onClick}) => {
+const ItemBar = ({title, descr, useIcon, bkgrd, percentVal, onClick}) => {
   const classes = useStyles()
-//  const [mSec, setMSec] = useState(undefined)
-//  const [mSecDur, setMSecDur] = useState(undefined)
-  const subtitleStyle = {
-    whiteSpace: 'unset',
-    textOverflow: 'clip',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  }
-  let itemTitle = ""
-  let idStr = ""
-  let itemDescr = <br/>
-  if (item!=null){
-    idStr = item.id
-    itemTitle = item.title
-    if (item.descr!=null) {
-      let tempItemDescr = item.descr
-      if (item.fullDescr && fullDescr) tempItemDescr = item.fullDescr
-      itemDescr = <div style={subtitleStyle}><br/>{tempItemDescr}</div>
-    }
-    if (itemTitle==null){
-      itemTitle = idStr+1
-    }
-  }
-  if (!showDescr) itemDescr = undefined
-  let percentVal = 0
+  const handleClick = (ev, idStr) => {
+    const resetPosMargin = 10000 // Reset playing to begining if less mSec remains
+    ev.stopPropagation()
+    if (onClick!=null) {
 /*
-  if (isActive && (curPos!=null)){
-    percentVal = calcPercent(curPos)
-  } else if (partOfCurList){
-    percentVal = (mSec * 100 / mSecDur)
-  }
+      const {episode,serie} = props
+      if ((mSec!=null) && (mSecDur!=null) && ((mSecDur-mSec-resetPosMargin)<0)){
+        apiObjSetStorage({curSerie: serie, curEp: episode},"mSec",0).then(() => {
+          onClick(ev)
+        }).catch(function(err) {
+          console.error(err)
+        })
+      } else {
+        onClick(ev)
+      }
 */
-  const partOfCurList = true
-  const isActive = false
-  const isPaused = false
+      onClick(ev)
+    }
+  }
   return (
     <GridListTileBar
-      title={itemTitle}
-      subtitle={(<div>{(partOfCurList || isActive)
-            && (<ItemProgressBar classes={classes} value={percentVal}/>)}{itemDescr}</div>)}
+      title={title}
+      subtitle={(<div>{percentVal
+            && (<ItemProgressBar classes={classes} value={percentVal}/>)}{descr}</div>)}
       classes={{
         root: classes.titleBar,
         title: classes.title,
@@ -103,10 +80,10 @@ const ItemBar = ({item, useIcon, bkgrd, showDescr, fullDescr, onClick}) => {
       }}
       actionIcon={(
         <ItemButton
-          useIcon={(((isPaused) || (!isActive)) ? (useIcon || <PlayArrow/>) : <Pause/>)}
+          useIcon={useIcon}
           classes={classes}
           bkgrd={bkgrd}
-          onClick={(e) => onClick(e)}/>)}
+          onClick={(e) => handleClick(e)}/>)}
     />
   )
 }

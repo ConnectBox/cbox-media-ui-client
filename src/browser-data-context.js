@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { apiGetStorage, apiSetStorage } from './utils/api'
+import { apiGetStorage } from './utils/api'
 import locale2 from 'locale2'
 import { iso639_3b2 } from './iso639-3b2'
-import { iso639Langs } from './iso639-1-full'
 
 const BrowserDataContext = React.createContext([{}, () => {}])
 const BrowserDataProvider = ({children}) => {
@@ -42,7 +41,7 @@ window.ipcRendererOn('locale',(event, value) => {
     const getCurLang = async () => {
       let retVal = await apiGetStorage("curLang")
       if (!retVal){
-        const checkLang = iso639_3b2[locale2.substr(0,2)]
+        retVal = iso639_3b2[locale2.substr(0,2)]
       }
       return retVal
     }

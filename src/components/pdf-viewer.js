@@ -42,7 +42,7 @@ export const PDFViewer = ({url,onProgress,startPage}) => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(startPage || 1)
   const fileObj = {}
-  const maxPages = numPages < 8 ? numPages : 8
+//  const maxPages = numPages < 8 ? numPages : 8
   const classes = useStyles()
 
   useEffect(() => {

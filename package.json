@@ -18,6 +18,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-i18next": "^11.3.4",
+    "react-lazyload": "^3.2.0",
     "react-pdf": "^4.1.0",
     "react-player": "^1.15.2",
     "react-reader": "^0.18.3",

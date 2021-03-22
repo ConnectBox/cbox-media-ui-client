@@ -1,38 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { isEmptyObj, isEmpty, pad,
-          getLocalMediaFName } from './utils/obj-functions'
-import { getHostPathSep, readFileAsync,
-            getLocale,
-              curWindowSize, curContentSize } from './utils/file-functions'
-import { apiGetConfig, getIdFromItem,
-          apiGetStoreItem, apiSetStorage, apiGetStorage,
-          apiObjGetStorage, apiObjSetStorage } from "./utils/api"
+import { getLocale } from './utils/file-functions'
+import { apiGetConfig, apiGetStoreItem, apiGetStorage } from "./utils/api"
 import { loadingStateValue } from "./utils/config-data"
 import { iso639_3b2 } from './iso639-3b2'
-import { useTranslation } from 'react-i18next'
-import path from 'path'
-import {chInBook} from './naviChapters'
-import { unique } from 'shorthash'
 import localforage from 'localforage'
 import locale2 from 'locale2'
 
-const versionStr = '2.20'
-
-const configDir = getHostPathSep() + "config" + getHostPathSep() + "mediaUI" + getHostPathSep()
-
-const configPaths = {
-  titleList: configDir+"cbox-titles.js",
-  featuredTitles: configDir+"cbox-featured.js",
-  langList: configDir+"cbox-lang.js",
-  labelList: configDir+"cbox-label.js",
-  myLang: configDir+"my-lang.js",
-//  langText: configDir+"cbox-lang-text.js",
-  channel: configDir+"channel.js",
-}
-
-const deleteProperty = (obj, id) => {
-  return (({[id]: deleted, ...obj}) => obj)(obj)
-}
+const versionStr = '2.21'
 
 const SettingsContext = React.createContext([{}, () => {}])
 const SettingsProvider = ({children}) => {
@@ -41,13 +15,7 @@ const SettingsProvider = ({children}) => {
     param: "",
     locPath: "",
   })
-  const { t } = useTranslation()
   const setStateKeyVal = (key,val) => setState(state => ({ ...state, [key]: val }))
-  const { langList, titleList, labelList, myLang,
-          featuredTitles, channel, defaultLang, cur, lang,
-          label, accessToken, installMissing, includeTestFiles, isDownloading,
-          downloadingText, progressText, percentProgress
-        } = state
 
   const getAllConfig = async () => {
     const defaultLang = iso639_3b2[locale2.substr(0,2)]
@@ -118,11 +86,6 @@ console.log(allConfigArr)
 console.log(getLocale())
     setTimeout(() => {handleConfig()}, 0)
   }, [])
-
-  const handleSelectLang = (lang) => setStateKeyVal("lang",lang)
-  const handleSelectLabel = (label) => setStateKeyVal("label",label)
-
-// compare getNavEpItem, getNavHist from qombi-pwa
 
   const handlerFunctions = {
     setIsPaused: () => console.log("setIsPause"),

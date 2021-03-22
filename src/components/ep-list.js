@@ -8,17 +8,11 @@ import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove'
 import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
-import CreateIcon from '@material-ui/icons/Create'
-import DeleteIcon from '@material-ui/icons/Delete'
-import AvPlay from '@material-ui/icons/PlayArrow'
-import CloseIcon from '@material-ui/icons/Close'
 import { getImgOfObj } from '../utils/obj-functions'
-import ItemBar from './item-bar.js'
-import {arrayRemove, arrayInsert} from '../utils/obj-functions'
+import ItemBarEpisode from './item-bar-episode'
 import useBrowserData from '../hooks/useBrowserData'
 import useMediaPlayer from "../hooks/useMediaPlayer"
 import useSettings from "../hooks/useSettings"
-import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -121,47 +115,14 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const EpList = (props) => {
-  const { channel, fullList, filter, title, serie, navButton, onClick,
-          onSetPaused, onPlayNext, onAddTitle, onDelete, useIcon,
-          onSelectFromLibrary, onTitlesUpdate, epList, imgSrc } = props
+  const { fullList, title, serie, navButton, useIcon,
+          epList, imgSrc } = props
   const [expanded,setExpanded] = useState(!navButton)
-  const {size, width, height, largeScreen} = useBrowserData()
+  const {size, width, height} = useBrowserData()
   const settings = useSettings()
-  const { titles, languages, myLang,
-          featuredTitles, handleFeaturedTitlesUpdate } = settings
-  const { playNext, startPlay, isPaused, setIsPaused,
-          curView, curPlay, curPos } = useMediaPlayer()
-  const { t } = useTranslation()
+  const { titles, languages, myLang, featuredTitles } = settings
+  const { startPlay } = useMediaPlayer()
   const classes = useStyles()
-  const [curSer, setCurSer] = useState(serie)
-  const [serieCurEp, setSerieCurEp] = useState(undefined)
-  const [curEditModeInx, setCurEditModeInx] = useState(undefined)
-  const [curFilter, setCurFilter] = useState(undefined)
-  const [anchorEl, setAnchorEl] = useState(null)
-  const handlePlay = (ev,item) => {
-    ev.stopPropagation()
-    startPlay(0,item)
-  }
-  const handleClick = (ev,idStr) => {
-    setCurSer(undefined)
-    setCurFilter(idStr)
-  }
-/*
-  const { curEp, onClickPlay } = props;
-  let epList = [];
-  if ((serie!=null) && (serie.fileList!=null)) {
-    epList = serie.fileList;
-  }
-  let curEpInx = 0;
-  if (curEp!=null){
-    curEpInx=curEp.id;
-  }
-  let tmpPlayEp = undefined;
-  if (curPlay!=null){
-    tmpPlayEp = curPlay.curEp;
-  }
-*/
-
   let curTitleList = []
   if (titles){
     if (fullList){
@@ -186,24 +147,6 @@ const EpList = (props) => {
       })
     }
   }
-  let useBkgrdColor = 'rgba(15, 4, 76, 0.68)'
-  if (curFilter==="vid"){
-    useBkgrdColor = 'rgba(255, 215, 0, 0.78)'
-  } else if ((curFilter==="epub")||(curFilter==="dwnl")){
-    useBkgrdColor = 'rgba(120, 215, 120, 0.78)'
-  } else if (curFilter==="html"){
-    useBkgrdColor = 'rgba(81, 184, 233, 0.68)'
-  }
-  const hasCurView = (curView!= null)
-  let featuredStr = t("featured")
-  if ((channel) && (channel.title)) {
-    featuredStr = channel.title
-  }
-  let showListTitle = ((channel!=null) || (curTitleList.length>0))
-  if (hasCurView) {
-    showListTitle = false
-  }
-
   let tmpPlaySer = undefined
   const sizeToCol = {"xl": 5, "lg": 4, "md": 3}
   let colSize = sizeToCol[size] || 2
@@ -214,21 +157,10 @@ const EpList = (props) => {
       curHeight = 300
     }
   }
-  const subtitleStyle = {
-    whiteSpace: 'unset',
-    lineHeight: '1.2',
-    marginTop: 10,
-    marginLeft: 15,
-    fontSize: '0.8rem',
-    textOverflow: 'clip',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  }
   const nbrOfEntries = epList && epList.length
-  const maxEntries = (navButton && !expanded) ? colSize +1 : nbrOfEntries
   const showNav = navButton && (nbrOfEntries > colSize)
   const showNavButton = showNav && !expanded
   const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
-//  const useColSize = colSize + (showNavButton ? 0 : 0.1)
   const expandIcon = expanded ? <RemoveIcon/> : <AddIcon/>
   const toggleExpand = (ev) => {
     ev.stopPropagation()
@@ -238,18 +170,9 @@ const EpList = (props) => {
     ev.stopPropagation()
     if (startPlay!=null) {
 console.log(ep)
-//      setSerieCurEp(tmpEp)
       startPlay(0,item,ep)
     }
   }
-/*
-{curIsSerie && showAllEp && (<IconButton
-  className={classes.actionButton}
-  onClick={handleCloseShowAllEp}><RemoveIcon/></IconButton>)}
-{curIsSerie && !showAllEp && (<IconButton
-  className={classes.actionButton}
-  onClick={handleShowList}><AddIcon/></IconButton>)}
-*/
   return (
     <CardContent className={classes.cardContent} >
       <Typography className={classes.areaHeadline} type="headline" component="h2">
@@ -280,7 +203,12 @@ console.log(ep)
                 alt={ep.title}
                 onClick={(ev) => handleClickItemIndex(ev,serie,ep)}
               />
-              : <ItemBar useIcon={useIcon} item={ep} onClick={(ev) => handleClickItemIndex(ev,serie,ep)}/>}
+                <ItemBarEpisode
+                  serie={serie}
+                  episode={ep}
+                  useIcon={useIcon}
+                  title={ep.title}
+                  onClick={(ev) => handleClickItemIndex(ev,serie,ep)}/>
             </GridListTile>
           )}
         )}

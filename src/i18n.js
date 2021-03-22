@@ -21,7 +21,6 @@ i18n
       bindI18n: 'languageChanged loaded',
       bindStore: 'added removed',
       nsMode: 'default',
-      noUSB: 'No connected USB drive detected',
     },
 
     resources: {
@@ -54,7 +53,6 @@ i18n
           page: "Page",
           page_plural: "Pages",
           test: "Test",
-          bible: "Bible",
           vid: "Video",
           settings: "Settings",
           version: "Version",
@@ -84,7 +82,6 @@ i18n
           downloading: "Downloading",
           unzipping: "Unzipping",
           unzipError: "Unzip Error: ",
-          usbMustBeEmpty: "Existing media content detected! Please use an empty USB",
           Gen:	"Genesis",
           Exod:	"Exodus",
           Lev:	"Leviticus",

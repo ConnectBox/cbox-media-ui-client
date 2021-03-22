@@ -18,8 +18,7 @@ const useStyles = makeStyles(theme => ({
 const CboxVideoPlayer = (props) => {
   const classes = useStyles()
   const [startPos, setStartPos] = useState(0)
-  const [duration, setDuration] = useState(undefined)
-  const {size, width, height, largeScreen} = useBrowserData()
+  const {width, height} = useBrowserData()
   const {playFromPosition, isPaused, url, fullSize} = props
   const playerRef = useRef()
 

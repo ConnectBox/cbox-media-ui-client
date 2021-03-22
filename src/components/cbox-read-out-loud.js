@@ -10,14 +10,16 @@ const CboxReadOutLoud = (props) => {
     }
   }, [props.location])
 
-  const onLocationChanged = checkLoc => props.onProgress && props.onProgress(checkLoc)
+//  const onLocationChanged = checkLoc => props.onProgress && props.onProgress(checkLoc)
   const handleLoading = event => console.log(event)
 
   useEffect(() => {
+    let iframeRefCurrent
     if ((props.onProgress != null)&&(iframeRef.current != null)){
-      iframeRef.current.addEventListener('load', handleLoading, true)
+      iframeRefCurrent = iframeRef.current
+      iframeRefCurrent.addEventListener('load', handleLoading, true)
     }
-    return () => iframeRef.current.removeEventListener('load', handleLoading)
+    return () => iframeRefCurrent.removeEventListener('load', handleLoading)
   }, [props.onProgress,iframeRef])
 
 

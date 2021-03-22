@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import Fab from '@material-ui/core/Fab'
 import NavClose from '@material-ui/icons/Close'
 import { PlayerInfo } from '../components/player-info.js'
@@ -15,9 +15,6 @@ import CboxVideoPlayer from './cbox-video'
 import CboxEpubPlayer from './cbox-epub'
 import CboxReadOutLoud from './cbox-read-out-loud'
 import CboxTrainingPlayer from './cbox-training'
-import { freeAudioIdOsisMap } from '../osisFreeAudiobible'
-import { audiobibleOsisId, osisIdAudiobibleTitle } from '../osisAudiobibleId'
-import { getLocalMediaFName, isEmptyObj, pad } from '../utils/obj-functions'
 import { PDFViewer } from '../components/pdf-viewer'
 
 let styles = {
@@ -73,9 +70,8 @@ let styles = {
 const Footer = () => {
   const {width, height} = useBrowserData()
   const player = useMediaPlayer()
-  const {isPlaying, currentTrackName, togglePlay, pdfDoc, curPlay,
+  const { curPlay,
           onStopPlaying, setIsPaused, onPlaying, onFinishedPlaying,
-          playPreviousTrack, playNextTrack,
           isPaused, isWaitingForPlayInfo} = player
   let tmpPlay = player.curPlay
   if (!tmpPlay) tmpPlay = {curSerie: undefined, curEp: undefined}
@@ -257,13 +253,6 @@ console.log("handleFinishedPlaying")
 
   const topMargin = 60
 
-  const getPatternContent = (part,bk,chStr) => {
-    if (part===1) return audiobibleOsisId[bk]
-    else if (part===2) return osisIdAudiobibleTitle[bk]
-    else if (part===3) return chStr
-    return part
-  }
-
   let curHeight = Math.trunc(width*9/16)
   if (curHeight>height-topMargin){
     curHeight = height-topMargin
@@ -280,7 +269,6 @@ console.log("handleFinishedPlaying")
   let epubFound = false
   let pdfFound = false
   let htmlFound = false
-  let bibleFound = false
   let curPlayState = Sound.status.PLAYING
   const btnStyle =  Object.assign({}, styles.floatingButton)
   let idStr = "footer"
@@ -289,10 +277,6 @@ console.log("handleFinishedPlaying")
     curPlayState = Sound.status.PAUSED
   }
   if ((curPlay!=null)) {
-    let bibleObj
-    if ((curEp!=null)&&(curEp.bibleType)) {
-      bibleObj = curEp
-    }
     if ((curEp!=null)&&(curEp.filename!=null)) {
       locURL = curEp.filename
     } else if ((curSerie!=null)&&(curSerie.curPath!=null)) {
@@ -300,7 +284,6 @@ console.log("handleFinishedPlaying")
     }
 //    locPath = getLocalMediaFName(locURL)
     locPath = locURL
-console.log(locPath)
     const typeFound = (type) => {
       if (curEp && curEp.mediaType) return curEp.mediaType===type
       return (curSerie &&(curSerie.mediaType===type))
@@ -310,30 +293,8 @@ console.log(locPath)
 //    htmlFound = typeFound("html") || typeFound("pdf")
     htmlFound = typeFound("html")
     videoFound = typeFound("vid")
-    bibleFound = typeFound("bible")
 
-    if (bibleFound) {
-      locURL = ""
-      if (!isEmptyObj(bibleObj)){
-        const {bk,id} = bibleObj
-        let idStr = pad(id)
-        let curFName
-        if (curSerie.freeType) {
-          if ((bk==="Ps") && (id<100)){
-            idStr = "0" +pad(id)
-          }
-          curFName = curSerie.curPath + "/"
-                            + freeAudioIdOsisMap[bk] + idStr + ".mp3"
-        } else {
-          curFName = curSerie.curPath + "/"
-          curSerie.pathPattern && curSerie.pathPattern.forEach(part => {
-            curFName += getPatternContent(part,bk,idStr)
-          })
-        }
-        locURL = curFName
-        locPath = getLocalMediaFName(locURL)
-      }
-    } else if (epubFound || htmlFound) {
+    if (epubFound || htmlFound) {
       readOutLoud = curSerie.readOL
     }
   }
@@ -468,48 +429,13 @@ console.log(locPath)
 
 }
 
-/*
-{videoFound ? (
-  <VideoPlayer
-    url={locPath}
-    fullSize={fullSizeFound}
-    isPaused={isPaused}
-    playFromPosition={startPos}
-    onEnded={handleFinishedVideoPlaying}
-    onDuration={handleVideoDuration}
-    onProgress={handleVideoProgress}
-    width={width}
-    height={curHeight}
-    playing
-    controls />
-): (htmlFound || readOutLoud || epubFound) && (
-  <CboxPreview
-    url={locURL}
-    height={height-topMargin}
-    onFinishedPlaying={closeFooter}
-  />
-)}
-
-*/
-
 export const MediaPlayer = (props) => {
   const [isWaitingForPlayInfo, setIsWaitingForPlayInfo] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [curCheckPos, setCurCheckPos] = useState(undefined)
   const [curPos, setCurPos] = useState()
   const player = useMediaPlayer()
-  const {curSerie, curEp, usbStr} = player
-  useEffect(() => {
-    let curPlay = {curSerie,curEp}
-  },[curSerie,curEp])
-
-/*
-  const handleStartPlay = (inx,curSerie,curEp) => {
-    setIsPaused(false)
-    setIsWaitingForPlayInfo(true)
-    setCurCheckPos(undefined)
-  }
-*/
+  const {curSerie, curEp} = player
 
   const handlePlaying = (cur) => {
     if ((cur!=null) && (cur.position!=null)
@@ -528,6 +454,7 @@ console.log(cur)
         if (props.onEndOfLevel!=null) props.onEndOfLevel()
       }
     }
+    if (props.onPlaying) props.onPlaying({position: cur.position, duration: cur.duration})
     setCurPos(cur)
   }
 
@@ -554,10 +481,4 @@ console.log(cur)
   )
 }
 
-/*
-<LangPage
-  language={curLang}
-  curLangData={langData[curLang]}
-/>
-*/
 export default MediaPlayer

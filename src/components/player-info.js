@@ -2,8 +2,6 @@ import React from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import Button from '@material-ui/core/Button'
 import { Download } from 'mdi-material-ui'
-import { osisIdEngTitle } from '../naviChapters'
-import { osisChTitles } from '../osisChTitles'
 
 const styles = {
   icon: {
@@ -171,11 +169,6 @@ const styles = {
 export const PlayerInfo = (props) => {
   const {serie, episode, curSec, curDur, isWaitingForPlayInfo} = props
 
-  const handleNewWindow = (ev) => {
-    ev.stopPropagation()
-console.log(ev)
-  }
-
   const handleDownload = (ev) => {
     ev.stopPropagation()
     const tmpFName = this.props.downloadName
@@ -186,6 +179,11 @@ console.log(ev)
     temporaryDownloadLink.setAttribute( 'download', tmpFName )
     temporaryDownloadLink.click()
     document.body.removeChild( temporaryDownloadLink )
+  }
+
+  const handleNewWindow = (ev) => {
+    ev.stopPropagation()
+console.log(ev)
   }
 
   const handleSetPaused = (ev) => {
@@ -226,13 +224,11 @@ console.log(ev)
     return (`${(m<10?'0':'') + m  }:${  s<10?'0':''  }${s}`)
   }
 
-  const isBible = (serie.mediaType==="bible")
   let playStateStr = "pause" // Show pause button while playing
   let hasButton = false
-  let allowDownload = true
+  let allowDownload = false
   let btnText = ""
   let btnUrl = ""
-  let epDescr
   if (props.isPaused || isWaitingForPlayInfo) {
     playStateStr = "play"
   }
@@ -240,10 +236,8 @@ console.log(ev)
   if ((curDur>0) && (curDur>=curSec)) {
     percent = 100*(curSec / curDur)
   }
-  let showPause = true
   if (props.isPaused || isWaitingForPlayInfo) {
     playStateStr = "play"
-    showPause = false
   }
   const {...progressStyles} = styles.progressBar
   const progressStyle = {...progressStyles}
@@ -258,10 +252,6 @@ console.log(ev)
       }
     } else if (serie.fName!=null){
       curEpTitle = serie.description
-    } else if (isBible) {
-      allowDownload = serie.freeType
-      curEpTitle = osisChTitles.eng[episode.bk][episode.id]
-      epDescr = osisIdEngTitle[episode.bk] + " " + episode.id
     }
     hasButton = (serie.button!=null)
     if (hasButton) {
@@ -269,7 +259,7 @@ console.log(ev)
       btnUrl = serie.button.url
     }
   }
-  const playPauseStr = showPause ? "pause" : "play"
+//  const playPauseStr = showPause ? "pause" : "play"
   return (
     <div className="playerInfo">
       <div className="playerBox" />
@@ -284,7 +274,7 @@ console.log(ev)
             {serie && <div style={styles.audioTitle}>{curEpTitle}</div>}
             {episode && <div style={styles.audioDescr}/>}
             {!hasButton && allowDownload && (<IconButton
-              onClick={(e) => this.handleDownload(e)}
+              onClick={(e) => handleDownload(e)}
               aria-label="Download"
               style={styles.icon}
             >
@@ -295,7 +285,7 @@ console.log(ev)
               variant="contained"
               color="secondary"
               style={styles.button}
-              onClick={(e) => this.handleNewWindow(e)}
+              onClick={(e) => handleNewWindow(e)}
             >{btnText}
             </Button>)}
           </div>

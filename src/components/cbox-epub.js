@@ -3,7 +3,9 @@ import { Swipeable } from "react-swipeable"
 import { EpubView } from 'react-reader'
 import { makeStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
-import ReadiumNavigator from '@readium/navigator-web'
+
+// This below seems not to be able to handle audio?
+//import ReadiumNavigator from '@readium/navigator-web'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -162,8 +164,8 @@ export const ReactReader = (props) => {
   const classes = useStyles()
   const {url, title, showToc = true,
         loadingView = <div className={classes.loadingView}>Loading…</div>,
-        epubOptions, styles, getRendition, locationChanged, location,
-        swipeable, tocChanged } = props
+        epubOptions, getRendition, locationChanged, location,
+        swipeable } = props
   const readerRef = useRef()
   const [expandedToc, setExpandedToc] = useState(false)
   const [toc, setToc] = useState(undefined)
@@ -262,7 +264,7 @@ export const ReactReader = (props) => {
 
 const CboxEpubPlayer = (props) => {
   const [location, setLocation] = useState(undefined)
-  const [curResources, setCurResources] = useState([])
+//  const [curResources, setCurResources] = useState([])
 
   useEffect(() => {
     if (props.location != null){
@@ -275,7 +277,7 @@ const CboxEpubPlayer = (props) => {
         &&(obj.book!=null)
         &&(obj.book.resources!=null)
         &&(obj.book.resources.resources!=null)){
-      setCurResources(obj.book.resources.resources)
+//      setCurResources(obj.book.resources.resources)
     }
   }
 
