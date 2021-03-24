@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import LazyLoad from 'react-lazyload'
 import { getImgOfObj } from '../utils/obj-functions'
 import { makeStyles } from '@material-ui/core/styles'
@@ -21,7 +21,7 @@ const ItemImage = (props) => {
   let useImage = getImgOfObj(item)
   if (curEp && curEp.image) useImage = getImgOfObj(curEp)
   return (
-    <LazyLoad height={props.height} once >
+    <LazyLoad height={props.height}>
       <div
         onClick={(ev) => onClick(ev)}
         style={(true) ? {cursor: "default"} : null}

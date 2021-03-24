@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import GridListTileBar from '@material-ui/core/GridListTileBar'
 import IconButton from '@material-ui/core/IconButton'
@@ -49,25 +49,6 @@ const ItemButton = ({useIcon,bkgrd,classes,onClick}) => (
 
 const ItemBar = ({title, descr, useIcon, bkgrd, percentVal, onClick}) => {
   const classes = useStyles()
-  const handleClick = (ev, idStr) => {
-    const resetPosMargin = 10000 // Reset playing to begining if less mSec remains
-    ev.stopPropagation()
-    if (onClick!=null) {
-/*
-      const {episode,serie} = props
-      if ((mSec!=null) && (mSecDur!=null) && ((mSecDur-mSec-resetPosMargin)<0)){
-        apiObjSetStorage({curSerie: serie, curEp: episode},"mSec",0).then(() => {
-          onClick(ev)
-        }).catch(function(err) {
-          console.error(err)
-        })
-      } else {
-        onClick(ev)
-      }
-*/
-      onClick(ev)
-    }
-  }
   return (
     <GridListTileBar
       title={title}
@@ -83,7 +64,7 @@ const ItemBar = ({title, descr, useIcon, bkgrd, percentVal, onClick}) => {
           useIcon={useIcon}
           classes={classes}
           bkgrd={bkgrd}
-          onClick={(e) => handleClick(e)}/>)}
+          onClick={(e) => onClick(e)}/>)}
     />
   )
 }

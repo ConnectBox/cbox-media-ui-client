@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import Typography from '@material-ui/core/Typography'
@@ -7,7 +7,6 @@ import { Download } from 'mdi-material-ui'
 import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
 import ItemImage from './item-image'
-import { getImgOfObj } from '../utils/obj-functions'
 import { menuList } from './cbox-menu-list'
 
 const useStyles = makeStyles(theme => ({
@@ -127,13 +126,13 @@ const InfoTileItem = ({item,curEp,expandIcon,onClickClose,
           <div className={classes.filler}/>
         </div>
       </div>
-        <ItemImage
-          item={item}
-          curEp={curEp}
-          onClick={(e) => onClickPlay(e)}
-          height={230}
-          float="right"
-        />
+      <ItemImage
+        item={item}
+        curEp={curEp}
+        onClick={(e) => onClickPlay(e)}
+        height={230}
+        float="right"
+      />
     </div>
   )
 }

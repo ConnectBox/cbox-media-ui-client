@@ -70,19 +70,19 @@ console.log(state)
 //    return Promise.all(checkConfigPromises)
   }
 
-  const handleConfig = async () => {
-console.log("handleConfig")
-    const allConfigArr = await getAllConfig()
-console.log(allConfigArr)
-/*
-    let allConfigObj = allConfigArr.reduce((obj, item) => {
-      obj[item.configKey] = item.val
-      return obj
-    }, {})
-*/
-//    updateLangConfig(allConfigObj,defaultLang,false)
-  }
   useEffect(() => {
+    const handleConfig = async () => {
+  console.log("handleConfig")
+      const allConfigArr = await getAllConfig()
+  console.log(allConfigArr)
+  /*
+      let allConfigObj = allConfigArr.reduce((obj, item) => {
+        obj[item.configKey] = item.val
+        return obj
+      }, {})
+  */
+  //    updateLangConfig(allConfigObj,defaultLang,false)
+    }
 console.log(getLocale())
     setTimeout(() => {handleConfig()}, 0)
   }, [])

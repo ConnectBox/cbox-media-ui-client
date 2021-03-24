@@ -55,9 +55,6 @@ console.log(curSerie)
   }
 
   const startPlay = async (inx,curSerie,curEp) => {
-console.log(inx)
-console.log(curSerie)
-console.log(curEp)
     if (!curSerie){ // stop playing
       let newPlayObj
       setStateKeyVal( "curPlay", newPlayObj)
