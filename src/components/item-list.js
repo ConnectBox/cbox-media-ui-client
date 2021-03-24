@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import React, {useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import CardContent from '@material-ui/core/CardContent'
 import GridList from '@material-ui/core/GridList'
@@ -9,12 +9,9 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import Typography from '@material-ui/core/Typography'
 import Fab from '@material-ui/core/Fab'
-import EpList from './ep-list'
-import ItemImage from './item-image'
-import ItemBarSerie from './item-bar-serie'
 import TileItem from './tile-item'
 import { menuList } from './cbox-menu-list'
-import { arrayInsert, getImgOfObj } from '../utils/obj-functions'
+import {arrayInsert} from '../utils/obj-functions'
 import useBrowserData from '../hooks/useBrowserData'
 import useMediaPlayer from "../hooks/useMediaPlayer"
 import useSettings from "../hooks/useSettings"
@@ -106,9 +103,9 @@ const useStyles = makeStyles(theme => ({
   tileRootYellowSmall: {
     backgroundColor: 'yellow',
   },
-  tileRootYellow: {
+  tileRootRed: {
     height: 'auto !important',
-    backgroundColor: 'yellow',
+    backgroundColor: 'red',
   },
   tileRootRedSmall: {
     backgroundColor: 'red',

@@ -14,7 +14,6 @@ import CBoxAppBar from './cbox-app-bar'
 import CboxMenuList from './cbox-menu-list'
 import { NavLangSelect, LanguageSelect } from './language-select'
 import { loadingStateValue } from '../utils/config-data'
-import useMediaPlayer from "../hooks/useMediaPlayer"
 import useSettings from "../hooks/useSettings"
 
 const defaultBackgroundStyle = {

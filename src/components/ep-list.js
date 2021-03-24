@@ -169,7 +169,6 @@ const EpList = (props) => {
   const handleClickItemIndex = (ev,item,ep) => {
     ev.stopPropagation()
     if (startPlay!=null) {
-console.log(ep)
       startPlay(0,item,ep)
     }
   }

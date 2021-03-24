@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Fab from '@material-ui/core/Fab'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -41,14 +41,14 @@ const useStyles = makeStyles(theme => ({
 export const PDFViewer = ({url,onProgress,startPage}) => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(startPage || 1)
-  const fileObj = {}
 //  const maxPages = numPages < 8 ? numPages : 8
   const classes = useStyles()
-
+/*
+  const fileObj = {}
   useEffect(() => {
     fileObj.url = url
   }, [url])
-
+*/
   const handlePrevious = (ev) => {
     if (numPages > 1) {
       onProgress(pageNumber-1)
