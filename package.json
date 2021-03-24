@@ -21,6 +21,7 @@
     "react-lazyload": "^3.2.0",
     "react-pdf": "^4.1.0",
     "react-player": "^1.15.2",
+    "react-qrcode-logo": "^2.2.1",
     "react-reader": "^0.18.3",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
@@ -30,6 +31,7 @@
     "react-tappable": "^1.0.4",
     "shorthash": "^0.0.2",
     "soundmanager2": "^2.97.20170602",
+    "use-local-storage-state": "^9.0.2",
     "verge": "^1.10.2"
   },
   "scripts": {

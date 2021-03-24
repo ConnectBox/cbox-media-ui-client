@@ -3,6 +3,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import * as Router from 'react-router-dom'
 import Drawer from '@material-ui/core/Drawer'
+import Popover from '@material-ui/core/Popover'
+import Dialog from '@material-ui/core/Dialog'
+import RegisterLogin from './register-login'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox';
 import Fab from '@material-ui/core/Fab'
@@ -12,9 +15,11 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import { useTranslation } from 'react-i18next'
 import CBoxAppBar from './cbox-app-bar'
 import CboxMenuList from './cbox-menu-list'
+import CboxUserMenu from './cbox-user-menu'
 import { NavLangSelect, LanguageSelect } from './language-select'
 import { loadingStateValue } from '../utils/config-data'
 import useSettings from "../hooks/useSettings"
+import useStorageState from '../utils/use-storage-state'
 
 const defaultBackgroundStyle = {
   height: 'auto',
@@ -96,6 +101,7 @@ const lang = navigator.languages ? navigator.languages[0] : (navigator.language 
 const CboxApp = (props) => {
   const [open, setOpen] = useState(false)
   const [showAll, setShowAll] = useState(false)
+  const user = undefined
 // translation path - for instance: "/location/data.en.properties"
 
   const settings = useSettings()
@@ -105,17 +111,63 @@ const CboxApp = (props) => {
   const classes = useStyles()
 //  const { curPlay } = useMediaPlayer()
 //  curPlay={curPlay}
-  const handleClose = () => setOpen(false)
 
   const Home = (props) => {
+    const [anchorEl, setAnchorEl] = useState()
+    const [regTypeID, setRegTypeID] = useState()
+    const [userMenuOpen, setUserMenuOpen] = useState(false)
+    const [user, setUser] = useStorageState()
     const loading = (loadingState!==loadingStateValue.finishedOk)
+    const handleClose = () => setOpen(false)
+    const handleUserMenu = (event) => {
+      setUserMenuOpen(true)
+      setAnchorEl(event.currentTarget)
+    }
+    const handleUserClose = (event,itemID) => {
+      if ((itemID == "Admin") || (itemID == "Student")) {
+        setUser(itemID)
+      } else if ((itemID == "QR") || (itemID == "Touch")) {
+        setRegTypeID(itemID)
+      } else {
+        setUser(undefined)
+      }
+      setUserMenuOpen(false)
+      setAnchorEl(null)
+    }
+    const handleRegisterQRClose = (event) => setRegTypeID(null)
     return (
   //    <div style={(curView!=null)? defaultBackgroundStyle : null}>
     <div style={defaultBackgroundStyle}>
       <CBoxAppBar
+        user={user}
         displayMenu={true}
         onLeftIconButtonClick={() => setOpen(!open)}
+      	onRightIconMenuSelect={(e)=>handleUserMenu(e)}
       />
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={()=>handleUserClose()}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <CboxUserMenu
+          user={user}
+          onMenuClick={(e,itemID)=>handleUserClose(e,itemID)}
+        />
+      </Popover>
+      <Dialog
+        open={Boolean(regTypeID)}
+        onClose={()=>handleRegisterQRClose()}
+      >
+        <RegisterLogin typeID={regTypeID} onClose={()=>handleRegisterQRClose()}/>
+      </Dialog>
       {(!loading) && (<ItemList
         filter=''
         onReset={props.onReset}
@@ -201,24 +253,10 @@ const CboxApp = (props) => {
       </div>
     )
   }
-
-//  const isCurPlaying = (curPlay!=null)
-//  data-playing={isCurPlaying}
   return (
     <div
       id="page_container"
     >
-      <Drawer
-        docked="false"
-        width={200}
-        open={open}
-        onClose={handleClose}
-      >
-        <CboxMenuList
-          channel={channel}
-          onMenuClick={() => setOpen(false)}
-        />
-      </Drawer>
       <Router.Switch>
         <Router.Route exact path='/' component={Home}/>
         <Router.Route path='/setting' component={Settings}/>
