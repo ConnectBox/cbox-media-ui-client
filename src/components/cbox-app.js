@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import * as Router from 'react-router-dom'
+import Drawer from '@material-ui/core/Drawer'
 import Popover from '@material-ui/core/Popover'
 import Dialog from '@material-ui/core/Dialog'
 import RegisterLogin from './register-login'
@@ -13,9 +14,11 @@ import Divider from '@material-ui/core/Divider'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import { useTranslation } from 'react-i18next'
 import CBoxAppBar from './cbox-app-bar'
+import CboxMenuList from './cbox-menu-list'
 import CboxUserMenu from './cbox-user-menu'
 import { NavLangSelect, LanguageSelect } from './language-select'
 import { loadingStateValue } from '../utils/config-data'
+import useMediaPlayer from "../hooks/useMediaPlayer"
 import useSettings from "../hooks/useSettings"
 import useStorageState from '../utils/use-storage-state'
 
@@ -99,10 +102,12 @@ const lang = navigator.languages ? navigator.languages[0] : (navigator.language 
 const CboxApp = (props) => {
   const [open, setOpen] = useState(false)
   const [showAll, setShowAll] = useState(false)
+  const user = undefined
 // translation path - for instance: "/location/data.en.properties"
 
   const settings = useSettings()
-  const { loadingState, versionStr } = settings
+  const { loadingState, channel,
+          versionStr } = settings
   const { t } = useTranslation()
   const classes = useStyles()
 //  const { curPlay } = useMediaPlayer()
@@ -111,17 +116,23 @@ const CboxApp = (props) => {
   const Home = (props) => {
     const [anchorEl, setAnchorEl] = useState()
     const [regTypeID, setRegTypeID] = useState()
+    const [userMenuOpen, setUserMenuOpen] = useState(false)
     const [user, setUser] = useStorageState()
     const loading = (loadingState!==loadingStateValue.finishedOk)
-    const handleUserMenu = (event) => setAnchorEl(event.currentTarget)
+    const handleClose = () => setOpen(false)
+    const handleUserMenu = (event) => {
+      setUserMenuOpen(true)
+      setAnchorEl(event.currentTarget)
+    }
     const handleUserClose = (event,itemID) => {
-      if ((itemID === "Admin") || (itemID === "Student")) {
+      if ((itemID == "Admin") || (itemID == "Student")) {
         setUser(itemID)
-      } else if ((itemID === "QR") || (itemID === "Touch")) {
+      } else if ((itemID == "QR") || (itemID == "Touch")) {
         setRegTypeID(itemID)
       } else {
         setUser(undefined)
       }
+      setUserMenuOpen(false)
       setAnchorEl(null)
     }
     const handleRegisterQRClose = (event) => setRegTypeID(null)

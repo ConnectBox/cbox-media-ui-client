@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -97,7 +97,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const CBoxAppBar = (props) =>  {
-  const { user, versionStr, largeScreen } = props
+  const { user, mediaEdit, versionStr, largeScreen } = props
   const { t } = useTranslation()
   const classes = useStyles()
   let useVersionStr
