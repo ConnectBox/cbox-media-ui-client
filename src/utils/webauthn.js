@@ -83,13 +83,13 @@ const validateCreds = async function(){
   // here for DEMO purposes only
   const dataFromClient = JSON.parse(atob(extractedData.clientDataJSON));
   const retrievedChallenge = atob(dataFromClient.challenge);
-  const retrievedOrigin = dataFromClient.origin;
+//const retrievedOrigin = dataFromClient.origin;
 
   // At MINIMUM, your auth checks should be:
   // 1. Check that the retrieved challenge matches the auth challenge you sent to the client, as we do trivially below
   // 2. Check that "retrievedOrigin" matches your domain - otherwise this might be a phish - not shown here
   console.log(retrievedChallenge);
-  if (retrievedChallenge == AUTH_CHALLENGE){
+  if (retrievedChallenge === AUTH_CHALLENGE){
       alert("Authorized");
   } else {
       alert("Unauthorized");

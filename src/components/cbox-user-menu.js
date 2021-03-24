@@ -7,15 +7,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import {hasPlatformAuthenticator} from '../utils/webauthn'
 
 const CboxUserMenu = props => {
-
-  const handleLogin = (provider) => {
-    props.onMenuClick(null)
-  }
-
-  const handleLogout = () => {
-    props.onMenuClick(null)
-  }
-
+  const handleLogout = () => props.onMenuClick(null)
   const {user} = props
   if (user){
     return (
