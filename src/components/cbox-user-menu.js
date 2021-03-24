@@ -4,9 +4,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import PersonIcon from '@material-ui/icons/Person'
-//import {hasPlatformAuthenticator} from '../utils/webauthn'
-
-const hasPlatformAuthenticator = undefined
+import {hasPlatformAuthenticator} from '../utils/webauthn'
 
 const CboxUserMenu = props => {
 
