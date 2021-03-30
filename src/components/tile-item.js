@@ -88,6 +88,7 @@ const TileItem = (props) => {
         onClickClose={(e) => props.onClickClose(e)}
         onClickDownload={(e) => props.onClickDownload(e)}
         onClickPlay={(e) => props.onClickPlay(e)}
+        onClickEdit={(e) => props.onClickEdit(e)}
         onClickExpand={(e) => props.onClickExpand(e)}
       />
     ) : (

@@ -5,8 +5,10 @@ import Typography from '@material-ui/core/Typography'
 import Fab from '@material-ui/core/Fab'
 import { Download } from 'mdi-material-ui'
 import CloseIcon from '@material-ui/icons/Close'
+import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import ItemImage from './item-image'
+import useStorageState from '../utils/use-storage-state'
 import { menuList } from './cbox-menu-list'
 
 const useStyles = makeStyles(theme => ({
@@ -86,10 +88,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-
-const InfoTileItem = ({item,curEp,expandIcon,onClickClose,
+const InfoTileItem = ({item,curEp,expandIcon,onClickClose,onClickEdit,
                         onClickDownload,onClickPlay,onClickExpand}) => {
   const classes = useStyles()
+  const [user] = useStorageState()
   return (
     <div>
       <div className={classes.infoTileContent}>
@@ -117,6 +119,14 @@ const InfoTileItem = ({item,curEp,expandIcon,onClickClose,
             className={classes.actionButton}
           >
             <Download/>
+          </Fab>)}
+          {user && (<Fab
+            onClick={(e) => onClickEdit(e)}
+            color="secondary"
+            aria-label="Edit"
+            className={classes.actionButton}
+          >
+            <EditIcon/>
           </Fab>)}
           {(item && item.fileList && item.fileList.length>1) && (<IconButton
             className={classes.actionButton}

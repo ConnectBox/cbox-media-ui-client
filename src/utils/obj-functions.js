@@ -92,6 +92,41 @@ export const removeEqualEndOfStr = (a, b) => {
   return resStr
 }
 
+export const turnBackToSlash = (thePath) => {
+  let retStr = thePath
+  if (thePath) {
+    retStr = thePath.replace(/\\/g, '/')
+  }
+  return retStr
+}
+
+export const turnToBackslash = (thePath) => {
+  let retStr = thePath || ""
+  if (thePath) {
+    const tmpPath = thePath.replace(/\//g, '\\')
+    retStr = tmpPath.replace(/\\\\/g, '\\')
+  }
+  return retStr
+}
+
+export const removePathPrefix = (thePath) => {
+  let retStr = thePath.replace(/^cbox:\//, '')
+  if (thePath) {
+    retStr = thePath.replace(/^file:\/\//g, '')
+  }
+  return retStr
+}
+
+const getOrgPathPrefix = (orgPath) => {
+  return getLocFilePrefix()+turnBackToSlash(orgPath)
+}
+
+export const removeOrgPathPrefix = (orgPath,thePath) => {
+  const checkPathPrefix = getOrgPathPrefix(orgPath)
+  const retStr = thePath.replace(checkPathPrefix, '')
+  return retStr
+}
+
 /* Example mapped function on object
 const oMap = (o, f) => Object.assign(...Object.keys(o).map(k => ({ [k]: f(o[k]) })))
 // For instance - square of each value:

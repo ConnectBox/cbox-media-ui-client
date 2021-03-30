@@ -5,3 +5,4 @@ export const getLocale = () => iso639_3b2[locale2.substr(0,2)]
 export const getLocaleIso639Letter2 = () => locale2.substr(0,2)
 export const unixPathSep = "/"
 export const getHostPathSep = () => unixPathSep
+export const pathExistsAsync = fname => false
