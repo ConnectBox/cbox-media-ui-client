@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { QRCode } from 'react-qrcode-logo'
-import {createCreds} from '../utils/webauthn'
+//import {createCreds} from '../utils/webauthn'
 import useStorageState from '../utils/use-storage-state'
 
 const RegisterLogin = ({typeID,onClose}) => {
@@ -19,7 +19,7 @@ const RegisterLogin = ({typeID,onClose}) => {
   const fallbackToQR = (typeID=="QR")
   const isTypeFingerprint = (typeID=="Touch")
   const handleFingerprint = () => {
-    createCreds()
+//    createCreds()
     setUsername(name)
     onClose()
   }
