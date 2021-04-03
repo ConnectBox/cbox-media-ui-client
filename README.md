@@ -27,7 +27,7 @@ Copy all the files in the "build" directory to the root folder on a static host
 
 ## Required configuration files
 
-cbox-titles.js - example Json file: see /config-sample/cbox-titles.js
+cbox-titles.js - example Json file: see /samples/config/mediaUI/cbox-titles.js
 cbox-featured.js
    - example Json file: export var cbox-featured = {"eng":["Z1qmAsi","2rKLU","ZiAz7"]}
 
@@ -43,3 +43,12 @@ Optional files in the directory /config/mediaUI
 ## File structure for media
 
 There are no special requirements for the file structure for the media files. However, it is a good best practise for series to jointly keep all episodes at the same location, i.e. in a separate sub-folder (one sub-folder for each serie)
+
+## Special file structure for an ePub library
+
+The requirement for organising ePub file structure (due to the option of allowing the read-out-load Readium project solution https://github.com/readium) is as follows:
+
+- Verify that all the content under the /public/epub/ folder is available under the static host /epub directory.
+- Upload all your ePub content directly under the /epub/library on the static host (a small example - hes_alive_-_el_vive.epub - is already available as an example under the /sample/epub/library folder)
+
+Both zipped epub content (i.e. content having the .epub extension) can be uploaded and used, as well as the alternative way to have the content unzipped (as subfolders under the /epub/library directory - and referenced accordingly by the main .opf file, for instance: epub/library/hes_alive_-_el_vive/content.opf)
