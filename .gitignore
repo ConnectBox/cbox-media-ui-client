@@ -67,6 +67,7 @@ typings/
 
 # testing
 /coverage
+/temp
 
 # production
 /build
@@ -76,6 +77,7 @@ public/*
 !public/css
 !public/icon
 !public/img
+!public/epub
 !public/favicon.ico
 !public/index.html
 !public/manifest.json

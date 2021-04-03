@@ -125,7 +125,7 @@ export var titleList = {
       "curPath": "epub/library",
       "description": "Various Children's Books",
       "fileList": [{
-        "filename": "epub/library/hes_alive_-_el_vive/content.opf",
+        "filename": "epub/library/hes_alive_-_el_vive.epub",
         "id": 0,
         "title": "Book_test_3"
       }, {
@@ -135,7 +135,7 @@ export var titleList = {
       }, {
         "filename": "epub/library/old_testament_stories_for_child_-_freekidstories_publishing/content.opf",
         "id": 2,
-        "title": "hes_alive_-_el_vive"
+        "title": "Stories for Kids"
       }, {
         "filename": "epub/library/trudge_and_zippy_-_aurora_productions/content.opf",
         "id": 3,
