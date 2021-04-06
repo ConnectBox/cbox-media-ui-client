@@ -57,6 +57,7 @@ i18n
           settings: "Settings",
           version: "Version",
           about: "About",
+          selectFile: "Load image file",
           language: "Language",
           swDescription: "ConnectBox Media UI",
           navLang: "Navigation language",

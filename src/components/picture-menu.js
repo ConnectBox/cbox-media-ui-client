@@ -14,7 +14,7 @@ const styles = {
 
 const PictureMenu = props => {
   const {t, anchorEl, open, onClose,
-          onSelectImageFileClick, onUnsplashClick, } = props
+          onSelectImageFileClick } = props
   return (
     <Menu
       id="simple-menu"

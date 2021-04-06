@@ -345,6 +345,12 @@ console.log(newLang[0])
             </Button>
           </Badge>)}
         </CardActions>
+        <PictureMenu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(undefined)}
+          onSelectImageFileClick={(event) => handleSelectImageFileClick(event)}
+        />
         {openListDialog
           && (<EpisodesDialog
             onClose={handleCloseListDialog}
