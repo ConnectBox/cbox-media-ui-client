@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import * as Router from 'react-router-dom'
@@ -12,9 +12,11 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import { useTranslation } from 'react-i18next'
 import CBoxAppBar from './cbox-app-bar'
 import CboxMenuList from './cbox-menu-list'
+import CboxBibleNavigation from './cbox-bible-navigation'
 import { NavLangSelect, LanguageSelect } from './language-select'
 import { loadingStateValue } from '../utils/config-data'
-import useSettings from "../hooks/useSettings"
+import useSettings from '../hooks/useSettings'
+import useMediaPlayer from '../hooks/useMediaPlayer'
 
 const defaultBackgroundStyle = {
   height: 'auto',
@@ -103,11 +105,23 @@ const CboxApp = (props) => {
           versionStr } = settings
   const { t } = useTranslation()
   const classes = useStyles()
-//  const { curPlay } = useMediaPlayer()
-//  curPlay={curPlay}
   const handleClose = () => setOpen(false)
-
   const Home = (props) => {
+    const { curPlay } = useMediaPlayer()
+    const [isCurBible,setIsCurBible] = useState(false)
+    const [curBiblePlay, setCurBiblePlay] = useState(undefined)
+    useEffect(() => {
+      if (curPlay!=null) setCurBiblePlay(JSON.parse(JSON.stringify(curPlay)))
+      if ((curPlay!=null)&&(curPlay.curSerie!=null)&&(curPlay.curSerie.mediaType!=null)){
+        setIsCurBible(curPlay.curSerie.mediaType==="bible")
+//        if (isCurBible) curBiblePlay.curEp = undefined
+      }
+    },[curPlay])
+    const handleExitBibleNavigation = () => {
+console.log("handleExitBibleNavigation")
+      setIsCurBible(false)
+//      setIsPaused(false)
+    }
     const loading = (loadingState!==loadingStateValue.finishedOk)
     return (
   //    <div style={(curView!=null)? defaultBackgroundStyle : null}>
@@ -116,9 +130,18 @@ const CboxApp = (props) => {
         displayMenu={true}
         onLeftIconButtonClick={() => setOpen(!open)}
       />
-      {(!loading) && (<ItemList
+      {isCurBible && (<CboxBibleNavigation
+  //      isPaused={isPaused}
+        onReset={props.onReset}
+        onExitNavigation={handleExitBibleNavigation}
+        onStartPlay={() => console.log("handleStartPlay")}
+//          handleStartPlay(curSerie,bookObj,id)
+
+      />)}
+      {(!loading) && !isCurBible && (<ItemList
         filter=''
         onReset={props.onReset}
+        curPlay={isCurBible ? curBiblePlay : curPlay}
       />)}
     </div>
   )}

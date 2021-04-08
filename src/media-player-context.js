@@ -106,11 +106,11 @@ console.log(curSerie)
         setStateKeyVal( "curPlay", newPlayObj)
       } else {
         apiObjGetStorage(newPlayObj,"curEp").then((value) => {
-          if ((value==null)||(curSerie.fileList[value]==null)){
+          if ((value==null)||(curSerie && curSerie.fileList && curSerie.fileList[value]==null)){
             value=0
             apiObjSetStorage(newPlayObj,"curEp",0)
           }
-          if (curSerie.fileList[value]!=null){
+          if (curSerie && curSerie.fileList && curSerie.fileList[value]!=null){
             newPlayObj.curEp=curSerie.fileList[value]
           }
 //            props.onStartPlay && props.onStartPlay(curSerie,curSerie.fileList[value])
