@@ -99,15 +99,25 @@ const CboxApp = (props) => {
   const [open, setOpen] = useState(false)
   const [showAll, setShowAll] = useState(false)
 // translation path - for instance: "/location/data.en.properties"
-
+  const { curPlay, startPlay } = useMediaPlayer()
   const settings = useSettings()
   const { loadingState, channel,
           versionStr } = settings
   const { t } = useTranslation()
   const classes = useStyles()
   const handleClose = () => setOpen(false)
+  const handleStartPlay = (inx,curSerie,curEp) => {
+console.log("handleStartBiblePlay")
+    startPlay(inx,curSerie,curEp)
+  }
+
+  const handleStartBiblePlay = (curSerie,bookObj,id) => {
+    const {bk} = bookObj
+    const curEp = {bibleType: true,bk,id}
+    startPlay(id,curSerie,curEp)
+  }
+
   const Home = (props) => {
-    const { curPlay } = useMediaPlayer()
     const [isCurBible,setIsCurBible] = useState(false)
     const [curBiblePlay, setCurBiblePlay] = useState(undefined)
     useEffect(() => {
@@ -134,9 +144,7 @@ console.log("handleExitBibleNavigation")
   //      isPaused={isPaused}
         onReset={props.onReset}
         onExitNavigation={handleExitBibleNavigation}
-        onStartPlay={() => console.log("handleStartPlay")}
-//          handleStartPlay(curSerie,bookObj,id)
-
+        onStartPlay={handleStartBiblePlay}
       />)}
       {(!loading) && !isCurBible && (<ItemList
         filter=''
