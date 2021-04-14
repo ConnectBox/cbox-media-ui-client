@@ -56,7 +56,7 @@ The requirement for organising ePub file structure *(due to the option of allowi
 - Verify that all the content under the /public/epub/ folder is available under the static host /epub directory.
 - Upload all your ePub content directly under the /epub/library on the static host *(a small example - hes_alive_-_el_vive.epub - is already available as an example under the /sample/epub/library folder)*
 
-Both zipped epub content *(i.e. content having the .epub extension) can be uploaded and used, as well as the alternative way to have the content unzipped (as subfolders under the /epub/library directory - and referenced accordingly by the main .opf file, for instance: epub/library/hes_alive_-_el_vive/content.opf)*
+Both zipped epub content *(i.e. content having the .epub extension)* can be uploaded and used, as well as the alternative way to have the content unzipped *(as subfolders under the /epub/library directory - and referenced accordingly by the main .opf file, for instance: epub/library/hes_alive_-_el_vive/content.opf)*
 
 ## Multi Level Navigation
 
