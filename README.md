@@ -69,8 +69,18 @@ An additional improvement for this kind of navigation would be to implement "swi
 Two Bible naming convention schemes are handled *(in code + structured data)*:
 
 - Free Audiobible - osisFreeAudiobible.js
-- Faith Comes By Hearing - osisAudiobibleId.js - partly implemented *(i. e. only verified for some languages)*. Potential to improve later on to be more robust and verified for more languages.
+- Faith Comes By Hearing (FCBH) - osisAudiobibleId.js - For this to work there is a required "pathPattern" field, which has to be present in the series Json data. The syntax of this field is an array as follows:
 
-Structured data is kept in the following file in order to have titles for all chapters in the Bible:
+- Any string entry is used exactly as written
+- Integer 1 means a special FCBH Bible book numbering scheme
+- Integer 2 means a spelled out Bible book
+- Integer 3 means the chapter number
+
+This is an example:
+
+- "pathPattern": [1, "_", 3, "_", 2, "_ENGWEBN2DA.mp3"]
+- the above example for John chapter 3 would then become: B04_03_John_ENGWEBN2DA.mp3
+
+Structured data for the Audio Bible navigation is kept in the following file in order to display titles for all chapters in the Bible:
 
 - osisChTitles.js

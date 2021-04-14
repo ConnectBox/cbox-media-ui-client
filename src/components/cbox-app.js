@@ -107,7 +107,6 @@ const CboxApp = (props) => {
   const classes = useStyles()
   const handleClose = () => setOpen(false)
   const handleStartPlay = (inx,curSerie,curEp) => {
-console.log("handleStartBiblePlay")
     startPlay(inx,curSerie,curEp)
   }
 
