@@ -21,7 +21,7 @@ import useMediaPlayer from '../hooks/useMediaPlayer'
 const defaultBackgroundStyle = {
   height: 'auto',
   minHeight: '100%',
-  background: 'black'
+  background: 'whitesmoke'
 }
 
 // const versionStr = 'Version 2.20'

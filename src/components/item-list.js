@@ -23,13 +23,14 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     paddingTop: 70,
   },
   cardContent: {
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     overflow: 'hidden',
     padding: 0,
+    paddingLeft: 8,
     width: '100%',
   },
   cardContentMulti: {
@@ -91,23 +92,29 @@ const useStyles = makeStyles(theme => ({
   },
   tileRoot: {
     height: 'auto !important',
-    background:
-      'linear-gradient(to bottom, rgba(16,26,56,0.9) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+    padding: '5px !important',
+//    background:
+//      'linear-gradient(to bottom, rgba(16,26,56,0.9) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
   },
   tileRootSmall: {
+    padding: '5px !important',
   },
   tileRootYellow: {
     height: 'auto !important',
+    padding: '5px !important',
     backgroundColor: 'yellow',
   },
   tileRootYellowSmall: {
+    padding: '5px !important',
     backgroundColor: 'yellow',
   },
   tileRootRed: {
     height: 'auto !important',
+    padding: '5px !important',
     backgroundColor: 'red',
   },
   tileRootRedSmall: {
+    padding: '5px !important',
     backgroundColor: 'red',
   },
 }))
@@ -218,11 +225,11 @@ console.log(inx)
       data-disabled={false}//curEditModeInx!=null
     >
     <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
-      <Typography className={classes.areaHeadline} type="headline" component="h2">
+      {(title && <Typography className={classes.areaHeadline} type="headline" component="h2">
         {title} {showNav && (<IconButton
           className={classes.iconButton}
           onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
-      </Typography>
+      </Typography>)}
       <GridList
         className={multiRow ? classes.gridListMulti : classes.gridList}
         cols={useColSize}

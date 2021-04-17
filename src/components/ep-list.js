@@ -21,11 +21,11 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     paddingTop: 70,
   },
   cardContent: {
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     overflow: 'hidden',
     padding: 0,
     width: '100%',
