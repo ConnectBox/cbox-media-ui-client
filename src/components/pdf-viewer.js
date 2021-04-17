@@ -4,7 +4,7 @@ import Fab from '@material-ui/core/Fab'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import { Document, Page } from 'react-pdf'
-import 'react-pdf/dist/Page/AnnotationLayer.css'
+import 'react-pdf/src/Page/AnnotationLayer.css'
 import { pdfjs } from 'react-pdf'
 pdfjs.GlobalWorkerOptions.workerSrc = `pdf.worker.js`
 
@@ -43,12 +43,6 @@ export const PDFViewer = ({url,onProgress,startPage}) => {
   const [pageNumber, setPageNumber] = useState(startPage || 1)
 //  const maxPages = numPages < 8 ? numPages : 8
   const classes = useStyles()
-/*
-  const fileObj = {}
-  useEffect(() => {
-    fileObj.url = url
-  }, [url])
-*/
   const handlePrevious = (ev) => {
     if (numPages > 1) {
       onProgress(pageNumber-1)

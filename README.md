@@ -58,6 +58,10 @@ The requirement for organising ePub file structure *(due to the option of allowi
 
 Both zipped epub content *(i.e. content having the .epub extension)* can be uploaded and used, as well as the alternative way to have the content unzipped *(as subfolders under the /epub/library directory - and referenced accordingly by the main .opf file, for instance: epub/library/hes_alive_-_el_vive/content.opf)*
 
+## Special file structure for Pdf handling
+
+When updating the Pdf library from https://github.com/wojtekmaj/react-pdf then always also copy the pdf.worker.js file from pdfjs-dist/build to the /public directory. This is in order for it to be copied to your project's output folder at build time.
+
 ## Multi Level Navigation
 
 Audio Bible multi level hierarchical navigation is an initial first example of what potentially can be useful in other situations too.
