@@ -373,7 +373,7 @@ console.log("handleFinishedPlaying")
         <Dialog
           disableBackdropClick
           onClose={onClose}
-          open={(pdfFound && pagePos)}
+          open={(pdfFound && (pagePos!=undefined))}
         >
           <Fab
             size="small"
