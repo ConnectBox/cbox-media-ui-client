@@ -125,7 +125,7 @@ const Footer = () => {
   }
   const restoreLoc = async (obj) => {
     await apiObjGetStorage(obj,"loc").then((value) => {
-      setLocPos(value||'epubcfi(/6/2[cover]!/6)')
+      setLocPos((value!=null) ? value : 'epubcfi(/6/2[cover]!/6)')
     }).catch((err) => {
       console.error(err)
     })

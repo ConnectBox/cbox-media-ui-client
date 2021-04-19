@@ -101,8 +101,8 @@ const TileItem = (props) => {
     )}
     {infoTile && expanded && epList
     && (<EpList
-      title={item.title}
       epList={epList}
+      multiRow
       onClick={(ev,ser,ep) => console.log(ep)}
       serie={item}
       isPaused={false}
