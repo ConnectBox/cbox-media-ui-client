@@ -4,7 +4,6 @@ import PlayArrow from '@material-ui/icons/PlayArrow'
 import Typography from '@material-ui/core/Typography'
 import Fab from '@material-ui/core/Fab'
 import { Download } from 'mdi-material-ui'
-import CloseIcon from '@material-ui/icons/Close'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import ItemImage from './item-image'
@@ -16,7 +15,6 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 20,
     paddingLeft: 10,
     fontWeight: 600,
-    color: 'rgba(255, 255, 255, 0.87)',
     width: '100%',
   },
   headline: {
@@ -24,13 +22,11 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: 10,
     fontWeight: 300,
     fontSize: '70%',
-    color: 'rgba(255, 255, 255, 0.87)',
   },
   epTitle: {
     paddingTop: 15,
     paddingLeft: 10,
     fontWeight: 300,
-    color: 'rgba(255, 255, 255, 0.87)',
     width: '100%',
   },
   epDescr: {
@@ -38,37 +34,28 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: 10,
     fontWeight: 100,
     fontSize: '70%',
-    color: 'rgba(255, 255, 255, 0.87)',
     width: '100%',
   },
   iconButton: {
-    color: 'white',
   },
   actionButton: {
-    color: 'lightgrey',
-  },
-  floatingButton: {
-    margin: 0,
     color: 'white',
-    left: '75%',
-    top: 'auto',
-    right: 'auto',
-    zIndex: 100,
-    position: 'relative',
+    backgroundColor: 'darkgrey',
   },
   buttonPlay: {
     margin: 20,
-    color: 'white',
     zIndex: 100,
   },
-  floatingButtonClose: {
+  floatingButtonBack: {
     margin: 0,
-    color: 'white',
-    left: '92%',
-    top: 'auto',
+    top: 50,
+    bottom: 'auto',
+    left: 20,
+    left: 'auto',
     zIndex: 100,
-    backgroundColor: 'rgba(120, 120, 120, 0.5)',
-    position: 'absolute',
+    position: 'fixed',
+    color: '#3f51b5',
+    backgroundColor: 'lightgrey',
   },
   infoImage: {
     height: 230,
@@ -79,12 +66,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   infoTileLeft: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    background:
-      'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0) 100%)',
   },
 }))
 
@@ -94,12 +75,18 @@ const InfoTileItem = ({item,curEp,expandIcon,onClickClose,onClickEdit,
   const [user] = useStorageState()
   return (
     <div>
+      <ItemImage
+        item={item}
+        curEp={curEp}
+        onClick={(e) => onClickPlay(e)}
+        height={230}
+        marginTop={25}
+      />
       <div className={classes.infoTileContent}>
         <Fab
-          color="primary"
-          className={classes.floatingButtonClose}
+          className={classes.floatingButtonBack}
           onClick={(e) => onClickClose(e)}
-        ><CloseIcon /></Fab>
+        ><LeftIcon /></Fab>
         <div className={classes.infoTileLeft}>
           <Typography className={classes.areaHeadline} type="headline">{item.title}</Typography>
           <Typography className={classes.headline} type="headline">{item.description}</Typography>
@@ -136,13 +123,6 @@ const InfoTileItem = ({item,curEp,expandIcon,onClickClose,onClickEdit,
           <div className={classes.filler}/>
         </div>
       </div>
-      <ItemImage
-        item={item}
-        curEp={curEp}
-        onClick={(e) => onClickPlay(e)}
-        height={230}
-        float="right"
-      />
     </div>
   )
 }

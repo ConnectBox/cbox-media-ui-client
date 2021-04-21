@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
-import { Swipeable } from "react-swipeable"
+import { useSwipeable } from "react-swipeable"
 import { EpubView } from 'react-reader'
 import { makeStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
@@ -149,6 +149,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const Swipeable = ({children, ...props}) => {
+  const handlers = useSwipeable(props);
+  return (<div { ...handlers }>{children}</div>);
+}
 
 const TocItem = (props) => {
   const setLocation = () => props.setLocation(props.href)

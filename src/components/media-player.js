@@ -15,6 +15,9 @@ import CboxVideoPlayer from './cbox-video'
 import CboxEpubPlayer from './cbox-epub'
 import CboxReadOutLoud from './cbox-read-out-loud'
 import CboxTrainingPlayer from './cbox-training'
+import { freeAudioIdOsisMap } from '../osisFreeAudiobible'
+import { audiobibleOsisId, osisIdAudiobibleTitle } from '../osisAudiobibleId'
+import { getLocalMediaFName, isEmptyObj, pad } from '../utils/obj-functions'
 import { PDFViewer } from '../components/pdf-viewer'
 
 let styles = {
@@ -122,7 +125,7 @@ const Footer = () => {
   }
   const restoreLoc = async (obj) => {
     await apiObjGetStorage(obj,"loc").then((value) => {
-      setLocPos(value||'epubcfi(/6/2[cover]!/6)')
+      setLocPos((value!=null) ? value : 'epubcfi(/6/2[cover]!/6)')
     }).catch((err) => {
       console.error(err)
     })
@@ -253,6 +256,13 @@ console.log("handleFinishedPlaying")
 
   const topMargin = 60
 
+  const getPatternContent = (part,bk,chStr) => {
+    if (part===1) return audiobibleOsisId[bk]
+    else if (part===2) return osisIdAudiobibleTitle[bk]
+    else if (part===3) return chStr
+    return part
+  }
+
   let curHeight = Math.trunc(width*9/16)
   if (curHeight>height-topMargin){
     curHeight = height-topMargin
@@ -269,6 +279,7 @@ console.log("handleFinishedPlaying")
   let epubFound = false
   let pdfFound = false
   let htmlFound = false
+  let bibleFound = false
   let curPlayState = Sound.status.PLAYING
   const btnStyle =  Object.assign({}, styles.floatingButton)
   let idStr = "footer"
@@ -277,6 +288,10 @@ console.log("handleFinishedPlaying")
     curPlayState = Sound.status.PAUSED
   }
   if ((curPlay!=null)) {
+    let bibleObj
+    if ((curEp!=null)&&(curEp.bibleType)) {
+      bibleObj = curEp
+    }
     if ((curEp!=null)&&(curEp.filename!=null)) {
       locURL = curEp.filename
     } else if ((curSerie!=null)&&(curSerie.curPath!=null)) {
@@ -293,8 +308,30 @@ console.log("handleFinishedPlaying")
 //    htmlFound = typeFound("html") || typeFound("pdf")
     htmlFound = typeFound("html")
     videoFound = typeFound("vid")
+    bibleFound = typeFound("bible")
 
-    if (epubFound || htmlFound) {
+    if (bibleFound) {
+      locURL = ""
+      if (!isEmptyObj(bibleObj)){
+        const {bk,id} = bibleObj
+        let idStr = pad(id)
+        let curFName
+        if (curSerie.freeType) {
+          if ((bk==="Ps") && (id<100)){
+            idStr = "0" +pad(id)
+          }
+          curFName = curSerie.curPath + "/"
+                            + freeAudioIdOsisMap[bk] + idStr + ".mp3"
+        } else {
+          curFName = curSerie.curPath + "/"
+          curSerie.pathPattern && curSerie.pathPattern.forEach(part => {
+            curFName += getPatternContent(part,bk,idStr)
+          })
+        }
+        locURL = curFName
+        locPath = getLocalMediaFName(locURL)
+      }
+    } else if (epubFound || htmlFound) {
       readOutLoud = curSerie.readOL
     }
   }
@@ -336,7 +373,7 @@ console.log("handleFinishedPlaying")
         <Dialog
           disableBackdropClick
           onClose={onClose}
-          open={(pdfFound && pagePos)}
+          open={(pdfFound && (pagePos!=undefined))}
         >
           <Fab
             size="small"

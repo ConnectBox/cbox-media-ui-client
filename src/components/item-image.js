@@ -7,6 +7,7 @@ const useStyles = makeStyles(theme => ({
   imageRoot: {
     height: props => props.height,
     width: props => props.width,
+    marginTop: props => props.marginTop,
     float: props => props.float,
   },
   filler: {

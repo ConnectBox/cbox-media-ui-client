@@ -21,11 +21,11 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     paddingTop: 70,
   },
   cardContent: {
-    backgroundColor: '#111',
+    backgroundColor: 'whitesmoke',
     overflow: 'hidden',
     padding: 0,
     width: '100%',
@@ -115,7 +115,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const EpList = (props) => {
-  const { fullList, title, serie, navButton, useIcon,
+  const { fullList, title, serie, navButton, useIcon, multiRow,
           epList, imgSrc } = props
   const [expanded,setExpanded] = useState(!navButton)
   const {size, width, height} = useBrowserData()
@@ -161,6 +161,7 @@ const EpList = (props) => {
   const showNav = navButton && (nbrOfEntries > colSize)
   const showNavButton = showNav && !expanded
   const useColSize = colSize + (showNavButton ? 0.15 : 0.1)
+  const showMulti = multiRow && expanded
   const expandIcon = expanded ? <RemoveIcon/> : <AddIcon/>
   const toggleExpand = (ev) => {
     ev.stopPropagation()
@@ -173,14 +174,14 @@ const EpList = (props) => {
     }
   }
   return (
-    <CardContent className={classes.cardContent} >
-      <Typography className={classes.areaHeadline} type="headline" component="h2">
+    <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
+      {title && (<Typography className={classes.areaHeadline} type="headline" component="h2">
         {title} {showNav && (<IconButton
           className={classes.iconButton}
           onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
-      </Typography>
+      </Typography>)}
       <GridList
-        className={showNavButton ? classes.gridList : classes.gridListScroll}
+        className={multiRow ? classes.gridListMulti : showNavButton ? classes.gridList : classes.gridListScroll}
         cols={useColSize}
       >
         {epList.map((ep,inx) => {

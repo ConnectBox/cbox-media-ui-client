@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import * as Router from 'react-router-dom'
@@ -21,11 +21,12 @@ import { loadingStateValue } from '../utils/config-data'
 import useMediaPlayer from "../hooks/useMediaPlayer"
 import useSettings from "../hooks/useSettings"
 import useStorageState from '../utils/use-storage-state'
+import CboxBibleNavigation from './cbox-bible-navigation'
 
 const defaultBackgroundStyle = {
   height: 'auto',
   minHeight: '100%',
-  background: 'black'
+  background: 'whitesmoke'
 }
 
 // const versionStr = 'Version 2.20'
@@ -104,7 +105,7 @@ const CboxApp = (props) => {
   const [showAll, setShowAll] = useState(false)
   const user = undefined
 // translation path - for instance: "/location/data.en.properties"
-
+  const { curPlay, startPlay } = useMediaPlayer()
   const settings = useSettings()
   const { loadingState, channel,
           versionStr } = settings
@@ -112,12 +113,35 @@ const CboxApp = (props) => {
   const classes = useStyles()
 //  const { curPlay } = useMediaPlayer()
 //  curPlay={curPlay}
+  const handleStartBiblePlay = (curSerie,bookObj,id) => {
+    const {bk} = bookObj
+    const curEp = {bibleType: true,bk,id}
+    startPlay(id,curSerie,curEp)
+  }
 
   const Home = (props) => {
     const [anchorEl, setAnchorEl] = useState()
     const [regTypeID, setRegTypeID] = useState()
     const [userMenuOpen, setUserMenuOpen] = useState(false)
     const [user, setUser] = useStorageState()
+    const handleClose = () => setOpen(false)
+    const [isCurBible,setIsCurBible] = useState(false)
+    const [curBiblePlay, setCurBiblePlay] = useState(undefined)
+    useEffect(() => {
+      if (curPlay!=null) setCurBiblePlay(JSON.parse(JSON.stringify(curPlay)))
+      if ((curPlay!=null)&&(curPlay.curSerie!=null)&&(curPlay.curSerie.mediaType!=null)){
+        setIsCurBible(curPlay.curSerie.mediaType==="bible")
+//        if (isCurBible) curBiblePlay.curEp = undefined
+      }
+    },[curPlay])
+    const handleStartPlay = (inx,curSerie,curEp) => {
+      startPlay(inx,curSerie,curEp)
+    }
+    const handleExitBibleNavigation = () => {
+console.log("handleExitBibleNavigation")
+      setIsCurBible(false)
+//      setIsPaused(false)
+    }
     const loading = (loadingState!==loadingStateValue.finishedOk)
     const handleClose = () => setOpen(false)
     const handleUserMenu = (event) => {
@@ -169,9 +193,16 @@ const CboxApp = (props) => {
       >
         <RegisterLogin typeID={regTypeID} onClose={()=>handleRegisterQRClose()}/>
       </Dialog>
-      {(!loading) && (<ItemList
+      {isCurBible && (<CboxBibleNavigation
+  //      isPaused={isPaused}
+        onReset={props.onReset}
+        onExitNavigation={handleExitBibleNavigation}
+        onStartPlay={handleStartBiblePlay}
+      />)}
+      {(!loading) && !isCurBible && (<ItemList
         filter=''
         onReset={props.onReset}
+        curPlay={isCurBible ? curBiblePlay : curPlay}
       />)}
     </div>
   )}
