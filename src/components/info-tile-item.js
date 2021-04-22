@@ -4,6 +4,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow'
 import Typography from '@material-ui/core/Typography'
 import Fab from '@material-ui/core/Fab'
 import { Download } from 'mdi-material-ui'
+import LeftIcon from '@material-ui/icons/KeyboardBackspace'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import ItemImage from './item-image'
@@ -41,6 +42,7 @@ const useStyles = makeStyles(theme => ({
   actionButton: {
     color: 'white',
     backgroundColor: 'darkgrey',
+    marginLeft: 20,
   },
   buttonPlay: {
     margin: 20,
@@ -111,7 +113,7 @@ const InfoTileItem = ({item,curEp,expandIcon,onClickClose,onClickEdit,
             onClick={(e) => onClickEdit(e)}
             color="secondary"
             aria-label="Edit"
-            className={classes.actionButton}
+            className={classes.iconButton}
           >
             <EditIcon/>
           </Fab>)}

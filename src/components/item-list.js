@@ -224,80 +224,83 @@ console.log(inx)
         />
       )
   } else {
-  const showInfo = (showInfoInx!=null)
-  const showItem = showInfo && curTitleList[showInfoInx]
-  const showEpList = showItem && showItem.fileList
-  const showUseIcon = showItem && (showItem.mediaType ? menuList[showItem.mediaType].icon : <PlayArrow/>)
-  return (
-    <div
-      className={classes.root}
-      data-disabled={false}//curEditModeInx!=null
-    >
-    <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
-      {(title && <Typography className={classes.areaHeadline} type="headline" component="h2">
-        {title} {showNav && (<IconButton
-          className={classes.iconButton}
-          onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
-      </Typography>)}
-      {(showInfo && <TileItem
-        item={showItem}
-        inx={showInfoInx}
-        expanded={showAllEp}
-        infoTile={true}
-        useIcon={showUseIcon}
-        epList={showEpList}
-        onClick={(e) => handleClickItem(e,showInfoInx)}
-        onClickClose={(e) => handleCloseDetails(e)}
-        onClickDownload={(e) => handleDownload(e)}
-        onClickPlay={(e) => handlePlay(e,showItem)}
-        onClickExpand={(e) => handleShowAllEp(e,!showAllEp)}
-      />)}
-      {(!showInfo && <GridList
-        className={multiRow ? classes.gridListMulti : classes.gridList}
-        cols={useColSize}
+    const showInfo = (showInfoInx!=null)
+    const showItem = showInfo && curTitleList[showInfoInx]
+    const showEpList = showItem && showItem.fileList
+    const showUseIcon = showItem && (showItem.mediaType ? menuList[showItem.mediaType].icon : <PlayArrow/>)
+    return (
+      <div
+        className={classes.root}
+        data-disabled={false}//curEditModeInx!=null
       >
-        {curTitleList.map((item,inx) => {
-          const showTile = (inx===(showInfoInx))
-          const tileRootClass = showTile ? classes.tileRootYellow
-                                  : (item===tmpPlaySer) ? classes.tileRootRed
-                                      : classes.tileRoot
-          const tileRootClassSmall = showTile ? classes.tileRootYellowSmall
-                                      : (item===tmpPlaySer) ? classes.tileRootRedSmall
-                                          : classes.tileRootSmall
-          const epList = item && item.fileList
-          const useIcon = (item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>)
-//          const useIcon = (item.mediaType ? menuList[item.mediaType].icon : ((isPaused) || (!isActive)) ? (useIcon || <PlayArrow/>) : <Pause/>)
-          return (
-            <GridListTile
-              key={item.id ? item.id : item.curPath + item.title}
-              cols={1}
-              rows={1}
-              onClick={(e) => handleClickItem(e,inx)}
-              className={(width>=480) ? tileRootClass : tileRootClassSmall}
-            >
-              <TileItem
-                item={item}
-                inx={inx}
-                expanded={showAllEp}
-                infoTile={showTile}
-                useIcon={useIcon}
-                epList={epList}
+      <CardContent className={(showMulti && !navButton) ? classes.cardContentMulti : classes.cardContent} >
+        {(title && <Typography className={classes.areaHeadline} type="headline" component="h2">
+          {title} {showNav && (<IconButton
+            className={classes.iconButton}
+            onClick={(ev) => toggleExpand(ev)}>{expandIcon}</IconButton>)}
+        </Typography>)}
+        {(showInfo && <TileItem
+          item={showItem}
+          inx={showInfoInx}
+          expanded={showAllEp}
+          infoTile={true}
+          useIcon={showUseIcon}
+          epList={showEpList}
+          onClick={(e) => handleClickItem(e,showInfoInx)}
+          onClickClose={(e) => handleCloseDetails(e)}
+          onClickDownload={(e) => handleDownload(e)}
+          onClickPlay={(e) => handlePlay(e,showItem)}
+          onClickEdit={(e) => handleEdit(e,showItem,showInfoInx)}
+          onClickExpand={(e) => handleShowAllEp(e,!showAllEp)}
+        />)}
+        {(!showInfo && <GridList
+          className={multiRow ? classes.gridListMulti : classes.gridList}
+          cols={useColSize}
+        >
+          {curTitleList.map((item,inx) => {
+            const showTile = (inx===(showInfoInx))
+            const tileRootClass = showTile ? classes.tileRootYellow
+                                    : (item===tmpPlaySer) ? classes.tileRootRed
+                                        : classes.tileRoot
+            const tileRootClassSmall = showTile ? classes.tileRootYellowSmall
+                                        : (item===tmpPlaySer) ? classes.tileRootRedSmall
+                                            : classes.tileRootSmall
+            const epList = item && item.fileList
+            const useIcon = (item.mediaType ? menuList[item.mediaType].icon : <PlayArrow/>)
+  //          const useIcon = (item.mediaType ? menuList[item.mediaType].icon : ((isPaused) || (!isActive)) ? (useIcon || <PlayArrow/>) : <Pause/>)
+            return (
+              <GridListTile
+                key={item.id ? item.id : item.curPath + item.title}
+                cols={1}
+                rows={1}
                 onClick={(e) => handleClickItem(e,inx)}
-                onClickClose={(e) => handleCloseDetails(e)}
-                onClickDownload={(e) => handleDownload(e)}
-                onClickPlay={(e) => handlePlay(e,item)}
-                onClickExpand={(e) => handleShowAllEp(e,!showAllEp)}
-              />
-            </GridListTile>
+                className={(width>=480) ? tileRootClass : tileRootClassSmall}
+              >
+                <TileItem
+                  item={item}
+                  inx={inx}
+                  expanded={showAllEp}
+                  infoTile={showTile}
+                  useIcon={useIcon}
+                  epList={epList}
+                  onClick={(e) => handleClickItem(e,inx)}
+                  onClickClose={(e) => handleCloseDetails(e)}
+                  onClickDownload={(e) => handleDownload(e)}
+                  onClickPlay={(e) => handlePlay(e,item)}
+                  onClickEdit={(e) => handleEdit(e,item,inx)}
+                  onClickExpand={(e) => handleShowAllEp(e,!showAllEp)}
+                />
+              </GridListTile>
+            )}
           )}
-        )}
-      </GridList>)}
-      {showNavButton && (<Fab
-        className={classes.floatingButton}
-        onClick={(ev) => toggleExpand(ev)}>{expandIcon}</Fab>)}
-    </CardContent>
-  </div>
-  )
+        </GridList>)}
+        {showNavButton && (<Fab
+          className={classes.floatingButton}
+          onClick={(ev) => toggleExpand(ev)}>{expandIcon}</Fab>)}
+      </CardContent>
+    </div>
+    )
+  }
 }
 
 export default ItemList

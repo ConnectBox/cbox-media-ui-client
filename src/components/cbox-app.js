@@ -143,7 +143,6 @@ console.log("handleExitBibleNavigation")
 //      setIsPaused(false)
     }
     const loading = (loadingState!==loadingStateValue.finishedOk)
-    const handleClose = () => setOpen(false)
     const handleUserMenu = (event) => {
       setUserMenuOpen(true)
       setAnchorEl(event.currentTarget)
