@@ -64,16 +64,41 @@ When updating the Pdf library from https://github.com/wojtekmaj/react-pdf then a
 
 ## Multi Level Navigation
 
-Audio Bible multi level hierarchical navigation is an initial first example of what potentially can be useful in other situations too.
+Audio Bible multi level hierarchical navigation is an initial first example of such a multi level navigation, which  potentially can be useful in many other situations too.
 
-An additional improvement for this kind of navigation would be to implement "swipe gestures" up / down / left and right
+The media navigation is currently limited to two levels; series and episodes. Here is an example of a top level list:
+
+<img alt="top-level.png" src="assets/top-level.png" width="" height="">&nbsp;
+
+After a click on the series **"Events in the 20th Century"** this is how the currently fully implemented two level navigation looks like *(serie with episodes)*:
+
+<img alt="series-level.png" src="assets/series-level.png" width="" height="">&nbsp;
+
+Alternatively - after a click on **the multi level icon "Audio Bible"** instead, then here is how the demo *(still rather unfinished)* of such a conceptual navigation  looks like *(initial level: 10 top level pictures introducing the whole Bible, as stories to listen to)*:
+
+<img alt="Bible-level1.png" src="assets/Bible-level1.png" width="" height="">&nbsp;
+
+A click on the **"Genesis"** icon drills down to the level of stories about the persons *(Adam, Noah, the Patriarchs and Joseph)* who are part of the wider Genesis story:
+
+<img alt="Bible-level2.png" src="assets/Bible-level2.png" width="" height="">&nbsp;
+
+Drilling down further by selecting **"Joseph"** now opens the list of the various stories about him:
+
+<img alt="Bible-level3.png" src="assets/Bible-level3.png" width="" height="">&nbsp;
+
+The audio playback works when clicking on a certain story. However, this playback for the Audio Bible format still has some serious limitations:
+
+- bookmarking not working
+- no automatic continuing to the next audio
+- navigation picture not displayed
+- missing navigation hierarchical indicators
 
 ## Audio Bible special structure
 
 Two Bible naming convention schemes are handled *(in code + structured data)*:
 
-- Free Audiobible - osisFreeAudiobible.js
-- Faith Comes By Hearing (FCBH) - osisAudiobibleId.js - For this to work there is a required "pathPattern" field, which has to be present in the series Json data. The syntax of this field is an array as follows:
+- **Free Audiobible** - *osisFreeAudiobible.js*
+- **Faith Comes By Hearing (FCBH)** - *osisAudiobibleId.js* - For this to work there is a required "pathPattern" field, which has to be present in the series Json data. The syntax of this field is an array as follows:
 
   - Any string entry is used exactly as written
   - Integer 1 = a special FCBH Bible book numbering scheme
@@ -90,4 +115,4 @@ Example of the FCBH format:
 
 Structured data for the Audio Bible navigation is kept in the following file in order to display titles for all chapters in the Bible:
 
-- osisChTitles.js
+- *osisChTitles.js*
