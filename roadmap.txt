@@ -1,1 +1,0 @@
-An additional improvement for this kind of navigation would be to implement "swipe gestures" up / down / left and right
