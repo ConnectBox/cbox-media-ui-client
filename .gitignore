@@ -67,9 +67,22 @@ typings/
 
 # testing
 /coverage
+/temp
 
 # production
 /build
+
+# public (only used locally for testing)
+public/*
+!public/css
+!public/icon
+!public/img
+!public/epub
+!public/favicon.ico
+!public/index.html
+!public/manifest.json
+!public/pdf.worker.js
+
 
 # misc
 .DS_Store
