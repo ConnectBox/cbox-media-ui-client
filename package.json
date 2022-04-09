@@ -1,0 +1,47 @@
+{
+  "name": "cbox-media-ui-client",
+  "version": "0.2.1",
+  "homepage": ".",
+  "private": true,
+  "dependencies": {
+    "@material-ui/codemod": "^4.5.0",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "axios": "^0.21.2",
+    "classnames": "^2.3.1",
+    "create-react-class": "^15.7.0",
+    "i18next": "^20.2.1",
+    "locale2": "^2.3.1",
+    "localforage": "^1.9.0",
+    "mdi-material-ui": "^6.22.0",
+    "moment": "^2.29.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-i18next": "^11.8.13",
+    "react-lazyload": "^3.2.0",
+    "react-pdf": "^5.2.0",
+    "react-player": "^2.9.0",
+    "react-reader": "^0.20.3",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "react-select": "^4.3.0",
+    "react-sound": "^1.2.0",
+    "react-swipeable": "^6.1.0",
+    "react-tappable": "^1.0.4",
+    "shorthash": "^0.0.2",
+    "soundmanager2": "^2.97.20170602",
+    "verge": "^1.10.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
